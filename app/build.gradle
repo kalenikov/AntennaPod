@@ -12,8 +12,9 @@ android {
         // Version code schema:
         // "1.2.3-beta4"    -> 1020304
         // "1.2.3"          -> 1020395
-        versionCode 3110495
-        versionName "3.11.4"
+        // Fork: base upstream code + optional CI offset so each fork release installs over the previous.
+        versionCode 3110495 + (project.hasProperty("versionCodeOffset") ? project.versionCodeOffset.toInteger() : 0)
+        versionName "3.11.4" + (project.hasProperty("versionNameSuffix") ? project.versionNameSuffix : "-fork")
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -39,7 +40,10 @@ android {
             resValue "string", "provider_authority", "de.danoeh.antennapod.debug.provider"
         }
         release {
-            resValue "string", "provider_authority", "de.danoeh.antennapod.provider"
+            // Fork: distinct applicationId + provider authority so this build installs
+            // alongside the stock AntennaPod without an install/signature/provider clash.
+            applicationIdSuffix ".fork"
+            resValue "string", "provider_authority", "de.danoeh.antennapod.fork.provider"
             minifyEnabled true
             shrinkResources true
             signingConfig signingConfigs.releaseConfig

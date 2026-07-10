@@ -263,6 +263,12 @@ public class SyncService extends Worker {
             return;
         }
 
+        // Fork patch: honor remote DELETE episode actions by removing the episode entirely
+        // (record + downloaded media). Stock AntennaPod ignores incoming DELETE actions.
+        // Deleting the whole item is safe against sync loops: once the item is gone,
+        // getFeedItemByGuidOrEpisodeUrl returns null on the next sync, so it terminates.
+        processRemoteDeleteActions(remoteActions);
+
         Map<Pair<String, String>, EpisodeAction> playActionsToUpdate = EpisodeActionFilter
                 .getRemoteActionsOverridingLocalActions(remoteActions,
                         synchronizationQueueStorage.getQueuedEpisodeActions());
@@ -297,6 +303,31 @@ public class SyncService extends Worker {
         DBWriter.removeQueueItem(getApplicationContext(), false, queueToBeRemoved.toArray());
         DBReader.loadFeedDataOfFeedItemList(updatedItems);
         DBWriter.setItemList(updatedItems);
+    }
+
+    /**
+     * Fork patch: delete episodes locally when the sync server reports a DELETE action for them.
+     * Used so that episodes removed from a server-side playlist (Pinchflat) also disappear from
+     * this app. Removes the whole feed item (list entry + downloaded media).
+     */
+    private void processRemoteDeleteActions(List<EpisodeAction> remoteActions) {
+        for (EpisodeAction action : remoteActions) {
+            if (action.getAction() != EpisodeAction.Action.DELETE) {
+                continue;
+            }
+            String guid = GuidValidator.isValidGuid(action.getGuid()) ? action.getGuid() : null;
+            FeedItem feedItem = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, action.getEpisode());
+            if (feedItem == null) {
+                continue;
+            }
+            Log.d(TAG, "Fork: deleting episode from remote DELETE action: " + action);
+            try {
+                DBWriter.deleteFeedItems(getApplicationContext(),
+                        Collections.singletonList(feedItem)).get();
+            } catch (Exception e) {
+                Log.e(TAG, "Fork: failed to delete feed item for action " + action, e);
+            }
+        }
     }
 
     private void clearErrorNotifications() {
