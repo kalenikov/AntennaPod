@@ -16,6 +16,10 @@ import java.util.Locale;
  * Fork feature: copies all data (database + every shared_prefs file) from the stock
  * AntennaPod install into this fork, using root. Lets the user migrate subscriptions,
  * episode states, per-feed settings and all global settings without starting from scratch.
+ *
+ * Android 11+ isolates each app's /data/data view in its own mount namespace, so a root
+ * shell spawned from this app cannot see the stock app's data dir. We therefore run the
+ * work inside init's (global) mount namespace via nsenter.
  */
 public final class RootMigrator {
     private static final String TAG = "RootMigrator";
@@ -65,8 +69,14 @@ public final class RootMigrator {
     /** Runs the migration script under {@code su} and stores the full output in the log file. */
     public static Result migrate(Context context) {
         String dst = context.getPackageName();
-        String script = buildScript(SOURCE_PKG, dst);
-        Result result = runSu(script);
+        Result result;
+        try {
+            File scriptFile = new File(context.getFilesDir(), "kp_migrate.sh");
+            FileUtils.writeStringToFile(scriptFile, buildScript(SOURCE_PKG, dst), StandardCharsets.UTF_8);
+            result = runSuInGlobalNamespace(scriptFile.getAbsolutePath());
+        } catch (Exception e) {
+            result = new Result(-1, "Failed to prepare migration: " + e);
+        }
 
         String stamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
         String header = "=== KalenikovPod migration ===\n"
@@ -85,7 +95,7 @@ public final class RootMigrator {
 
     /** Recent device logcat (needs root); used by the "App" tab of the log viewer. */
     public static String readAppLogcat() {
-        Result r = runSu("logcat -d -v time -t 2000\n");
+        Result r = runSuScript("logcat -d -v time -t 2000\n");
         if (r.output == null || r.output.trim().isEmpty()) {
             return "logcat empty or root denied (exit " + r.exitCode + ")";
         }
@@ -97,9 +107,19 @@ public final class RootMigrator {
         return "set -x\n"
                 + "SRC=" + src + "\n"
                 + "DST=" + dst + "\n"
-                + "S=/data/data/$SRC\n"
+                + "S=\n"
+                + "for c in \"/data/data/$SRC\" \"/data/user/0/$SRC\"; do"
+                + " if [ -d \"$c\" ]; then S=\"$c\"; break; fi; done\n"
                 + "D=/data/data/$DST\n"
-                + "if [ ! -d \"$S\" ]; then echo 'ERROR: stock AntennaPod (' $SRC ') is not installed'; exit 2; fi\n"
+                + "[ -d \"$D\" ] || D=/data/user/0/$DST\n"
+                + "if [ -z \"$S\" ]; then\n"
+                + "  echo \"ERROR: stock AntennaPod ($SRC) data dir not found\"\n"
+                + "  echo '--- packages matching antennapod ---'; pm list packages 2>/dev/null | grep -i antennapod\n"
+                + "  echo '--- /data/data ---'; ls -la /data/data 2>/dev/null | grep -i antennapod\n"
+                + "  echo '--- /data/user/0 ---'; ls -la /data/user/0 2>/dev/null | grep -i antennapod\n"
+                + "  exit 2\n"
+                + "fi\n"
+                + "echo \"source=$S target=$D\"\n"
                 + "am force-stop $SRC\n"
                 + "own=$(stat -c '%u:%g' \"$D\")\n"
                 + "echo \"target owner: $own\"\n"
@@ -120,7 +140,23 @@ public final class RootMigrator {
                 + "echo 'OK: migrated db + shared_prefs'\n";
     }
 
-    private static Result runSu(String script) {
+    /**
+     * Executes the script at {@code scriptPath} as root inside init's global mount namespace
+     * (so other apps' /data/data dirs are visible), falling back to the plain namespace and
+     * to Magisk's --mount-master if nsenter is unavailable.
+     */
+    private static Result runSuInGlobalNamespace(String scriptPath) {
+        String p = "'" + scriptPath + "'";
+        String command =
+                "if command -v nsenter >/dev/null 2>&1; then\n"
+                + "  nsenter --mount=/proc/1/ns/mnt -- sh " + p + "\n"
+                + "else\n"
+                + "  sh " + p + "\n"
+                + "fi\n";
+        return runSuScript(command);
+    }
+
+    private static Result runSuScript(String script) {
         Process process = null;
         try {
             ProcessBuilder pb = new ProcessBuilder("su");
