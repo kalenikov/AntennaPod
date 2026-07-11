@@ -1,6 +1,8 @@
 package de.danoeh.antennapod.ui.screen.preferences;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -78,6 +80,12 @@ public final class RootMigrator {
             result = new Result(-1, "Failed to prepare migration: " + e);
         }
 
+        if (result.isSuccess()) {
+            // Media files were copied into the fork's external dir; repoint FeedMedia.file_url
+            // from the stock package path to the fork package path so downloads resolve.
+            result = new Result(result.exitCode, result.output + rewriteMediaPaths(context, dst));
+        }
+
         String stamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(new Date());
         String header = "=== KalenikovPod migration ===\n"
                 + "time: " + stamp + "\n"
@@ -91,6 +99,34 @@ public final class RootMigrator {
             Log.e(TAG, "Failed to write migration log", e);
         }
         return result;
+    }
+
+    private static String rewriteMediaPaths(Context context, String dst) {
+        String from = "/Android/data/" + SOURCE_PKG + "/";
+        String to = "/Android/data/" + dst + "/";
+        try {
+            File dbFile = context.getDatabasePath("Antennapod.db");
+            if (!dbFile.exists()) {
+                return "\nWARN: migrated DB not found for path rewrite";
+            }
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getPath(), null, SQLiteDatabase.OPEN_READWRITE);
+            int rows;
+            try (Cursor c = db.rawQuery(
+                    "SELECT COUNT(*) FROM FeedMedia WHERE file_url LIKE ?", new String[]{"%" + from + "%"})) {
+                rows = c.moveToFirst() ? c.getInt(0) : 0;
+            }
+            db.execSQL("UPDATE FeedMedia SET file_url = REPLACE(file_url, ?, ?) WHERE file_url LIKE ?",
+                    new Object[]{from, to, "%" + from + "%"});
+            db.close();
+            return "\nDB file_url rewritten for " + rows + " media rows (" + from + " -> " + to + ")";
+        } catch (Exception e) {
+            return "\nWARN: DB path rewrite failed: " + e;
+        }
+    }
+
+    /** Clears the device logcat buffer (best effort, needs root). */
+    public static void clearLogcat() {
+        runSuScript("logcat -c\n");
     }
 
     /** Recent device logcat (needs root); used by the "App" tab of the log viewer. */
@@ -137,7 +173,27 @@ public final class RootMigrator {
                 + "restorecon -R \"$D/databases\" \"$D/shared_prefs\" 2>/dev/null\n"
                 + "echo '--- databases ---'; ls -la \"$D/databases\"\n"
                 + "echo '--- shared_prefs ---'; ls -la \"$D/shared_prefs\"\n"
-                + "echo 'OK: migrated db + shared_prefs'\n";
+                // --- downloaded media (external files dir), best-effort ---
+                + "ES=\n"
+                + "for c in \"/data/media/0/Android/data/$SRC/files\" \"/storage/emulated/0/Android/data/$SRC/files\"; do"
+                + " if [ -d \"$c\" ]; then ES=\"$c\"; break; fi; done\n"
+                + "EB=\n"
+                + "for c in \"/data/media/0/Android/data/$DST\" \"/storage/emulated/0/Android/data/$DST\"; do"
+                + " if [ -d \"$c\" ]; then EB=\"$c\"; break; fi; done\n"
+                + "if [ -n \"$ES\" ] && [ -n \"$EB\" ]; then\n"
+                + "  own_ext=$(stat -c '%u:%g' \"$EB\")\n"
+                + "  mkdir -p \"$EB/files\"\n"
+                + "  cp -a \"$ES/.\" \"$EB/files/\"\n"
+                + "  chown -R \"$own_ext\" \"$EB/files\"\n"
+                + "  restorecon -R \"$EB/files\" 2>/dev/null\n"
+                + "  echo \"media copied: $ES -> $EB/files (owner $own_ext)\"\n"
+                + "  du -sh \"$EB/files\" 2>/dev/null\n"
+                + "elif [ -z \"$ES\" ]; then\n"
+                + "  echo 'WARN: source external files dir not found (no downloads?)'\n"
+                + "else\n"
+                + "  echo 'WARN: target external dir not found; open KalenikovPod once, then re-run'\n"
+                + "fi\n"
+                + "echo 'OK: migrated db + shared_prefs + media'\n";
     }
 
     /**

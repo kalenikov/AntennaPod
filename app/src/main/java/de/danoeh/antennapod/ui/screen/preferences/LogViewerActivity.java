@@ -76,9 +76,13 @@ public class LogViewerActivity extends ToolbarActivity {
         Button refresh = new Button(this);
         refresh.setText(R.string.log_refresh);
         refresh.setOnClickListener(v -> selectTab(currentTab));
+        Button clear = new Button(this);
+        clear.setText(R.string.log_clear);
+        clear.setOnClickListener(v -> clearLogs());
         actions.addView(copy, equalWeight());
         actions.addView(share, equalWeight());
         actions.addView(refresh, equalWeight());
+        actions.addView(clear, equalWeight());
         root.addView(actions);
 
         ScrollView scroll = new ScrollView(this);
@@ -130,6 +134,19 @@ public class LogViewerActivity extends ToolbarActivity {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, logView.getText().toString());
         startActivity(Intent.createChooser(intent, getString(R.string.log_share)));
+    }
+
+    private void clearLogs() {
+        if (currentTab == TAB_APP) {
+            new Thread(RootMigrator::clearLogcat).start();
+        } else {
+            java.io.File file = RootMigrator.migrationLogFile(this);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        logView.setText("");
+        Toast.makeText(this, R.string.log_cleared, Toast.LENGTH_SHORT).show();
     }
 
     @Override
