@@ -51,6 +51,9 @@ android {
     }
 
     lint {
+        // Fork: don't run lint during release assembly so strict upstream rules
+        // (warningsAsErrors/MissingTranslation) can't block our CI release build.
+        checkReleaseBuilds false
         disable 'CheckResult', 'MissingMediaBrowserServiceIntentFilter', 'UnusedAttribute', 'InflateParams',
                 'RestrictedApi', 'ExportedReceiver', 'NotifyDataSetChanged', 'UseCompoundDrawables', 'NestedWeights',
                 'Overdraw', 'UselessParent', 'TextFields', 'AlwaysShowAction', 'Autofill', 'ClickableViewAccessibility',

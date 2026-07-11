@@ -39,6 +39,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -63,6 +64,8 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String PREF_DATABASE_EXPORT = "prefDatabaseExport";
     private static final String PREF_AUTOMATIC_DATABASE_EXPORT = "prefAutomaticDatabaseExport";
     private static final String PREF_FAVORITE_EXPORT = "prefFavoritesExport";
+    private static final String PREF_ROOT_IMPORT_FROM_STOCK = "prefRootImportFromStock";
+    private static final String PREF_VIEW_LOGS = "prefViewLogs";
     private static final String DEFAULT_OPML_OUTPUT_NAME = "antennapod-feeds-%s.opml";
     private static final String CONTENT_TYPE_OPML = "text/x-opml";
     private static final String DEFAULT_HTML_OUTPUT_NAME = "antennapod-feeds-%s.html";
@@ -180,6 +183,70 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
                     openExportPathPicker(Export.FAVORITES, chooseFavoritesExportPathLauncher);
                     return true;
                 });
+        findPreference(PREF_ROOT_IMPORT_FROM_STOCK).setOnPreferenceClickListener(
+                preference -> {
+                    confirmRootImport();
+                    return true;
+                });
+        findPreference(PREF_VIEW_LOGS).setOnPreferenceClickListener(
+                preference -> {
+                    openLogViewer(null);
+                    return true;
+                });
+    }
+
+    private void confirmRootImport() {
+        new MaterialAlertDialogBuilder(getActivity())
+                .setTitle(R.string.root_import_label)
+                .setMessage(R.string.root_import_warning)
+                .setNegativeButton(R.string.no, null)
+                .setPositiveButton(R.string.confirm_label, (dialog, which) -> runRootImport())
+                .show();
+    }
+
+    private void runRootImport() {
+        progressDialog.show();
+        disposable = Single.fromCallable(() -> RootMigrator.migrate(getContext()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    progressDialog.dismiss();
+                    showRootImportResult(result);
+                }, error -> {
+                    progressDialog.dismiss();
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setTitle(R.string.root_import_failed_title)
+                            .setMessage(String.valueOf(error))
+                            .setPositiveButton(R.string.view_logs_label, (d, w) -> openLogViewer("migration"))
+                            .show();
+                });
+    }
+
+    private void showRootImportResult(RootMigrator.Result result) {
+        if (result.isSuccess()) {
+            new MaterialAlertDialogBuilder(getContext())
+                    .setTitle(R.string.root_import_done_title)
+                    .setMessage(R.string.root_import_done_message)
+                    .setCancelable(false)
+                    .setNeutralButton(R.string.view_logs_label, (d, w) -> openLogViewer("migration"))
+                    .setPositiveButton(R.string.restart_label, (d, w) -> forceRestart())
+                    .show();
+        } else {
+            new MaterialAlertDialogBuilder(getContext())
+                    .setTitle(R.string.root_import_failed_title)
+                    .setMessage(getString(R.string.root_import_failed_title) + " (exit " + result.exitCode + ")")
+                    .setPositiveButton(R.string.view_logs_label, (d, w) -> openLogViewer("migration"))
+                    .setNegativeButton(android.R.string.ok, null)
+                    .show();
+        }
+    }
+
+    private void openLogViewer(String tab) {
+        Intent intent = new Intent(getContext(), LogViewerActivity.class);
+        if (tab != null) {
+            intent.putExtra(LogViewerActivity.EXTRA_TAB, tab);
+        }
+        startActivity(intent);
     }
 
     private String dateStampFilename(String fname) {
