@@ -48,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -272,9 +273,25 @@ public class SyncService extends Worker {
         Map<Pair<String, String>, EpisodeAction> playActionsToUpdate = EpisodeActionFilter
                 .getRemoteActionsOverridingLocalActions(remoteActions,
                         synchronizationQueueStorage.getQueuedEpisodeActions());
+        applyRemotePlayActions(getApplicationContext(), playActionsToUpdate.values());
+    }
+
+    /**
+     * Applies remote PLAY episode actions to the local database: updates the playback position and,
+     * when a play action is (almost) complete, marks the episode played and drops it from the play
+     * queue. This is how a "watched" state set on one device reaches the others.
+     *
+     * <p>Extracted from {@link #processEpisodeActions} and made {@code public static} so the fork's
+     * "manual mark-as-played syncs across devices" behaviour can be verified by an instrumented test
+     * that feeds it a completed PLAY action directly (mirroring {@link #processRemoteDeleteActions}).
+     *
+     * @return ids of the feed items that were marked played by these actions
+     */
+    public static LongList applyRemotePlayActions(Context context, Collection<EpisodeAction> playActions) {
+        LongList markedPlayed = new LongList();
         LongList queueToBeRemoved = new LongList();
         List<FeedItem> updatedItems = new ArrayList<>();
-        for (EpisodeAction action : playActionsToUpdate.values()) {
+        for (EpisodeAction action : playActions) {
             String guid = GuidValidator.isValidGuid(action.getGuid()) ? action.getGuid() : null;
             FeedItem feedItem = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, action.getEpisode());
             if (feedItem == null) {
@@ -295,14 +312,16 @@ public class SyncService extends Worker {
                 feedItem.setPlayed(true);
                 media.setPosition(0);
                 queueToBeRemoved.add(feedItem.getId());
+                markedPlayed.add(feedItem.getId());
             } else {
                 Log.d(TAG, "Setting position: " + action);
             }
             updatedItems.add(feedItem);
         }
-        DBWriter.removeQueueItem(getApplicationContext(), false, queueToBeRemoved.toArray());
+        DBWriter.removeQueueItem(context, false, queueToBeRemoved.toArray());
         DBReader.loadFeedDataOfFeedItemList(updatedItems);
         DBWriter.setItemList(updatedItems);
+        return markedPlayed;
     }
 
     /**
