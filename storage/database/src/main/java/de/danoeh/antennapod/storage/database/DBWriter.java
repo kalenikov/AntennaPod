@@ -670,10 +670,39 @@ public class DBWriter {
             adapter.open();
             adapter.setFeedItemRead(played, itemIds);
             adapter.close();
+            if (played == FeedItem.PLAYED) {
+                enqueuePlayedActions(itemIds);
+            }
             if (broadcastUpdate) {
                 EventBus.getDefault().post(new UnreadItemsUpdateEvent());
             }
         });
+    }
+
+    /**
+     * Fork: marking an episode as played (even without listening to it) enqueues a completed
+     * gpodder PLAY action, so the played state syncs to the server. Stock AntennaPod only syncs
+     * play state that resulted from actual playback.
+     */
+    private static void enqueuePlayedActions(long... itemIds) {
+        for (long id : itemIds) {
+            FeedItem item = DBReader.getFeedItem(id);
+            if (item == null || item.getMedia() == null) {
+                continue;
+            }
+            DBReader.loadFeedDataOfFeedItemList(java.util.Collections.singletonList(item));
+            if (item.getFeed() == null) {
+                continue;
+            }
+            int durationSec = Math.max(item.getMedia().getDuration(), 0) / 1000;
+            EpisodeAction action = new EpisodeAction.Builder(item, EpisodeAction.PLAY)
+                    .currentTimestamp()
+                    .started(0)
+                    .position(durationSec)
+                    .total(durationSec)
+                    .build();
+            SynchronizationQueue.getInstance().enqueueEpisodeAction(action);
+        }
     }
 
     /**
@@ -691,7 +720,9 @@ public class DBWriter {
             adapter.open();
             adapter.setFeedItemRead(item, played, resetMediaPosition);
             adapter.close();
-
+            if (played == FeedItem.PLAYED) {
+                enqueuePlayedActions(item.getId());
+            }
             EventBus.getDefault().post(new UnreadItemsUpdateEvent());
         });
     }
