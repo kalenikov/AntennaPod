@@ -1,0 +1,35 @@
+name: Build instrumented test APKs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+
+      - name: Build app-under-test + androidTest APKs (free debug)
+        run: |
+          ./gradlew --no-daemon \
+            :app:assembleFreeDebug \
+            :app:assembleFreeDebugAndroidTest
+
+      - name: Collect APKs
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/free/debug/app-free-debug.apk out/app-free-debug.apk
+          cp app/build/outputs/apk/androidTest/free/debug/app-free-debug-androidTest.apk out/app-free-debug-androidTest.apk
+          ls -la out
+
+      - name: Upload test APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: kp-test-apks
+          path: out/*.apk
