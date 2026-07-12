@@ -320,6 +320,9 @@ public class SyncService extends Worker {
             if (feedItem == null) {
                 continue;
             }
+            // getFeedItemByGuidOrEpisodeUrl does not populate the item's Feed; load it so
+            // DBWriter.deleteFeedItems (which calls item.getFeed().isLocalFeed()) doesn't NPE.
+            DBReader.loadFeedDataOfFeedItemList(Collections.singletonList(feedItem));
             Log.d(TAG, "Fork: deleting episode from remote DELETE action: " + action);
             try {
                 DBWriter.deleteFeedItems(context, Collections.singletonList(feedItem)).get();
