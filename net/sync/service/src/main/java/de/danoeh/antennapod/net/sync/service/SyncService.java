@@ -267,7 +267,7 @@ public class SyncService extends Worker {
         // (record + downloaded media). Stock AntennaPod ignores incoming DELETE actions.
         // Deleting the whole item is safe against sync loops: once the item is gone,
         // getFeedItemByGuidOrEpisodeUrl returns null on the next sync, so it terminates.
-        processRemoteDeleteActions(remoteActions);
+        processRemoteDeleteActions(getApplicationContext(), remoteActions);
 
         Map<Pair<String, String>, EpisodeAction> playActionsToUpdate = EpisodeActionFilter
                 .getRemoteActionsOverridingLocalActions(remoteActions,
@@ -310,7 +310,7 @@ public class SyncService extends Worker {
      * Used so that episodes removed from a server-side playlist (Pinchflat) also disappear from
      * this app. Removes the whole feed item (list entry + downloaded media).
      */
-    private void processRemoteDeleteActions(List<EpisodeAction> remoteActions) {
+    public static void processRemoteDeleteActions(Context context, List<EpisodeAction> remoteActions) {
         for (EpisodeAction action : remoteActions) {
             if (action.getAction() != EpisodeAction.Action.DELETE) {
                 continue;
@@ -322,8 +322,7 @@ public class SyncService extends Worker {
             }
             Log.d(TAG, "Fork: deleting episode from remote DELETE action: " + action);
             try {
-                DBWriter.deleteFeedItems(getApplicationContext(),
-                        Collections.singletonList(feedItem)).get();
+                DBWriter.deleteFeedItems(context, Collections.singletonList(feedItem)).get();
             } catch (Exception e) {
                 Log.e(TAG, "Fork: failed to delete feed item for action " + action, e);
             }
