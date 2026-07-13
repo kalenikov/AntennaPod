@@ -18,8 +18,11 @@ import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeDown;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -73,6 +76,10 @@ public class ForkChangelogTest {
             onView(withText(R.string.kalenikovpod_pref)).perform(click());
             onView(withText(R.string.fork_update_label)).check(matches(isDisplayed()));
             onView(withText(R.string.view_logs_label)).check(matches(isDisplayed()));
+            onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeUp());
+            onView(withText(R.string.fork_settings_export_label)).check(matches(isDisplayed()));
+            onView(withText(R.string.fork_settings_import_label)).check(matches(isDisplayed()));
+            onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeDown());
             onView(withText(R.string.fork_changelog_label)).perform(click());
             onView(withText(R.string.fork_changelog_title)).check(matches(isDisplayed()));
         }

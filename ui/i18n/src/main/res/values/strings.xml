@@ -717,6 +717,20 @@
     <string name="fork_feat_v8">fork.8</string>
     <string name="fork_feat_changelog_title">Ченжлог и «Что нового»</string>
     <string name="fork_feat_changelog_desc">История изменений по релизам; после обновления при первом открытии показывается «Что нового». Раздел KalenikovPod в настройках.</string>
+    <string name="fork_settings_export_label">Экспорт настроек</string>
+    <string name="fork_settings_export_summary">Сохранить настройки приложения в файл для переноса на другой телефон (без root)</string>
+    <string name="fork_settings_import_label">Импорт настроек</string>
+    <string name="fork_settings_import_summary">Загрузить настройки из файла, экспортированного на другом телефоне</string>
+    <string name="fork_settings_import_warning">Текущие настройки будут заменены настройками из файла (логин синхронизации переносится, идентификатор устройства останется свой). Приложение перезапустится. Продолжить?</string>
+    <string name="fork_settings_import_done">Настройки импортированы. Приложение перезапустится.</string>
+    <string name="fork_settings_export_done">Настройки сохранены в файл</string>
+    <string name="fork_settings_error">Не удалось перенести настройки: %1$s</string>
+    <string name="fork_feat_v9">fork.9</string>
+    <string name="fork_feat_settings_title">Перенос настроек без root</string>
+    <string name="fork_feat_settings_desc">Экспорт настроек в файл на одном телефоне и импорт на другом — вместе со штатным экспортом базы данных заменяет root-миграцию.</string>
+    <string name="fork_cl_v9" translatable="false">fork.9</string>
+    <string name="fork_cl_v9_date" translatable="false">2026-07-13</string>
+    <string name="fork_cl_v9_text">• Экспорт и импорт настроек файлом — перенос на телефон без root</string>
     <string name="fork_cl_v8" translatable="false">fork.8</string>
     <string name="fork_cl_v8_date" translatable="false">2026-07-13</string>
     <string name="fork_cl_v8_text">• Ченжлог с датами и автопоказ «Что нового» после обновления\n• Раздел «KalenikovPod» в настройках: миграция, логи, фичи, обновления, ченжлог</string>

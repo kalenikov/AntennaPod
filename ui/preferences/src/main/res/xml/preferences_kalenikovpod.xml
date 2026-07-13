@@ -22,4 +22,12 @@
             android:key="prefRootImportFromStock"
             android:title="@string/root_import_label"
             android:summary="@string/root_import_summary"/>
+    <Preference
+            android:key="prefForkSettingsExport"
+            android:title="@string/fork_settings_export_label"
+            android:summary="@string/fork_settings_export_summary"/>
+    <Preference
+            android:key="prefForkSettingsImport"
+            android:title="@string/fork_settings_import_label"
+            android:summary="@string/fork_settings_import_summary"/>
 </PreferenceScreen>

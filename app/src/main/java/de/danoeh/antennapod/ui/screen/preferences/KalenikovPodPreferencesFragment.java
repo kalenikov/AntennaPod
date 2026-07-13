@@ -5,12 +5,21 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
@@ -30,9 +39,16 @@ public class KalenikovPodPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String PREF_FORK_FEATURES = "prefForkFeatures";
     private static final String PREF_FORK_UPDATE = "prefForkUpdate";
     private static final String PREF_FORK_CHANGELOG = "prefForkChangelog";
+    private static final String PREF_FORK_SETTINGS_EXPORT = "prefForkSettingsExport";
+    private static final String PREF_FORK_SETTINGS_IMPORT = "prefForkSettingsImport";
 
     private Disposable disposable;
     private ProgressDialog progressDialog;
+
+    private final ActivityResultLauncher<String> settingsExportLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("application/zip"), this::exportSettingsTo);
+    private final ActivityResultLauncher<String[]> settingsImportLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(), this::confirmSettingsImport);
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -64,6 +80,17 @@ public class KalenikovPodPreferencesFragment extends AnimatedPreferenceFragment 
         findPreference(PREF_FORK_CHANGELOG).setOnPreferenceClickListener(
                 preference -> {
                     ForkChangelog.show(getContext());
+                    return true;
+                });
+        findPreference(PREF_FORK_SETTINGS_EXPORT).setOnPreferenceClickListener(
+                preference -> {
+                    String date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+                    settingsExportLauncher.launch("kalenikovpod-settings-" + date + ".zip");
+                    return true;
+                });
+        findPreference(PREF_FORK_SETTINGS_IMPORT).setOnPreferenceClickListener(
+                preference -> {
+                    settingsImportLauncher.launch(new String[] {"*/*"});
                     return true;
                 });
     }
@@ -199,6 +226,73 @@ public class KalenikovPodPreferencesFragment extends AnimatedPreferenceFragment 
                     .setNegativeButton(android.R.string.ok, null)
                     .show();
         }
+    }
+
+    private void exportSettingsTo(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        progressDialog.show();
+        disposable = Single.fromCallable(() -> {
+                    try (OutputStream out = getContext().getContentResolver().openOutputStream(uri)) {
+                        return ForkSettingsTransfer.exportSettings(getContext(), out);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(count -> {
+                    progressDialog.dismiss();
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setMessage(R.string.fork_settings_export_done)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                }, error -> {
+                    progressDialog.dismiss();
+                    Log.e(TAG, "Settings export failed", error);
+                    showSettingsTransferError(error);
+                });
+    }
+
+    private void confirmSettingsImport(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        new MaterialAlertDialogBuilder(getActivity())
+                .setTitle(R.string.fork_settings_import_label)
+                .setMessage(R.string.fork_settings_import_warning)
+                .setNegativeButton(R.string.no, null)
+                .setPositiveButton(R.string.confirm_label, (dialog, which) -> runSettingsImport(uri))
+                .show();
+    }
+
+    private void runSettingsImport(Uri uri) {
+        progressDialog.show();
+        disposable = Single.fromCallable(() -> {
+                    try (InputStream in = getContext().getContentResolver().openInputStream(uri)) {
+                        return ForkSettingsTransfer.importSettings(getContext(), in);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(count -> {
+                    progressDialog.dismiss();
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setMessage(R.string.fork_settings_import_done)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.restart_label, (d, w) -> forceRestart())
+                            .show();
+                }, error -> {
+                    progressDialog.dismiss();
+                    Log.e(TAG, "Settings import failed", error);
+                    showSettingsTransferError(error);
+                });
+    }
+
+    private void showSettingsTransferError(Throwable error) {
+        new MaterialAlertDialogBuilder(getContext())
+                .setMessage(getString(R.string.fork_settings_error, String.valueOf(error.getMessage())))
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private void openLogViewer(String tab) {
