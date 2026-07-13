@@ -29,6 +29,7 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_ytcull_title, R.string.fork_feat_ytcull_desc, R.string.fork_feat_v5},
             {R.string.fork_feat_watchedsync_title, R.string.fork_feat_watchedsync_desc, R.string.fork_feat_v5},
             {R.string.fork_feat_update_title, R.string.fork_feat_update_desc, R.string.fork_feat_v7},
+            {R.string.fork_feat_changelog_title, R.string.fork_feat_changelog_desc, R.string.fork_feat_v8},
     };
 
     @Override

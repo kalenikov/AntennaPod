@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+            android:key="prefForkUpdate"
+            android:title="@string/fork_update_label"
+            android:summary="@string/fork_update_summary"/>
+    <Preference
+            android:key="prefForkChangelog"
+            android:title="@string/fork_changelog_label"
+            android:summary="@string/fork_changelog_summary"/>
+    <Preference
+            android:key="prefForkFeatures"
+            android:title="@string/fork_features_label"
+            android:summary="@string/fork_features_summary"/>
+    <Preference
+            android:key="prefViewLogs"
+            android:title="@string/view_logs_label"
+            android:summary="@string/view_logs_summary"/>
+    <Preference
+            android:key="prefRootImportFromStock"
+            android:title="@string/root_import_label"
+            android:summary="@string/root_import_summary"/>
+</PreferenceScreen>

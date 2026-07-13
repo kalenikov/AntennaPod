@@ -709,6 +709,38 @@
     <string name="fork_update_available">Вышла версия %1$s. Скачать и установить?</string>
     <string name="fork_update_downloading">Скачиваю %1$s…</string>
     <string name="fork_update_error">Не удалось проверить обновления: %1$s</string>
+    <string name="kalenikovpod_pref" translatable="false">KalenikovPod</string>
+    <string name="kalenikovpod_pref_summary">Обновления, фичи и инструменты форка</string>
+    <string name="fork_changelog_label">Ченжлог</string>
+    <string name="fork_changelog_summary">История изменений форка по релизам</string>
+    <string name="fork_changelog_title">Что нового в KalenikovPod</string>
+    <string name="fork_feat_v8">fork.8</string>
+    <string name="fork_feat_changelog_title">Ченжлог и «Что нового»</string>
+    <string name="fork_feat_changelog_desc">История изменений по релизам; после обновления при первом открытии показывается «Что нового». Раздел KalenikovPod в настройках.</string>
+    <string name="fork_cl_v8" translatable="false">fork.8</string>
+    <string name="fork_cl_v8_date" translatable="false">2026-07-13</string>
+    <string name="fork_cl_v8_text">• Ченжлог с датами и автопоказ «Что нового» после обновления\n• Раздел «KalenikovPod» в настройках: миграция, логи, фичи, обновления, ченжлог</string>
+    <string name="fork_cl_v7" translatable="false">fork.7</string>
+    <string name="fork_cl_v7_date" translatable="false">2026-07-13</string>
+    <string name="fork_cl_v7_text">• Кнопка «Проверить обновления»: скачивает новый релиз с GitHub и открывает установщик</string>
+    <string name="fork_cl_v6" translatable="false">fork.6</string>
+    <string name="fork_cl_v6_date" translatable="false">2026-07-13</string>
+    <string name="fork_cl_v6_text">• Экран «Фичи форка» со списком доработок</string>
+    <string name="fork_cl_v5" translatable="false">fork.5</string>
+    <string name="fork_cl_v5_date" translatable="false">2026-07-12</string>
+    <string name="fork_cl_v5_text">• Ручная отметка «просмотрено» синхронизируется между телефонами\n• «Просмотрено» убирает видео из YouTube-плейлиста Download</string>
+    <string name="fork_cl_v4" translatable="false">fork.4</string>
+    <string name="fork_cl_v4_date" translatable="false">2026-07-11</string>
+    <string name="fork_cl_v4_text">• Миграция переносит и скачанные медиафайлы\n• Кнопка очистки логов</string>
+    <string name="fork_cl_v3" translatable="false">fork.3</string>
+    <string name="fork_cl_v3_date" translatable="false">2026-07-11</string>
+    <string name="fork_cl_v3_text">• Исправление root-миграции на Android 11+</string>
+    <string name="fork_cl_v2" translatable="false">fork.2</string>
+    <string name="fork_cl_v2_date" translatable="false">2026-07-11</string>
+    <string name="fork_cl_v2_text">• Перенос данных из стокового AntennaPod (root)\n• Экран логов</string>
+    <string name="fork_cl_v1" translatable="false">fork.1</string>
+    <string name="fork_cl_v1_date" translatable="false">2026-07-10</string>
+    <string name="fork_cl_v1_text">• Первый релиз: удаление эпизодов по команде сервера (плейлист Download)</string>
     <string name="please_wait">Please wait&#8230;</string>
     <string name="export_error_label">Export error</string>
     <string name="export_success_title">Export successful</string>

@@ -46,6 +46,12 @@
             android:title="@string/notification_pref_fragment"
             android:icon="@drawable/ic_notifications"/>
 
+    <Preference
+            android:key="prefScreenKalenikovPod"
+            android:title="@string/kalenikovpod_pref"
+            android:summary="@string/kalenikovpod_pref_summary"
+            android:icon="@drawable/ic_info"/>
+
     <PreferenceCategory
             android:key="project"
             android:title="@string/project_pref">

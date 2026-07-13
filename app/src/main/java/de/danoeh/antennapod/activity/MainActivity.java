@@ -59,6 +59,7 @@ import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.discovery.DiscoveryFragment;
+import de.danoeh.antennapod.ui.screen.preferences.ForkChangelog;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.InboxFragment;
@@ -346,13 +347,15 @@ public class MainActivity extends CastEnabledActivity {
 
     private void checkFirstLaunch() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        if (prefs.getBoolean(PREF_IS_FIRST_LAUNCH, true)) {
+        boolean firstLaunch = prefs.getBoolean(PREF_IS_FIRST_LAUNCH, true);
+        if (firstLaunch) {
             FeedUpdateManager.getInstance().restartUpdateAlarm(this, true);
 
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(PREF_IS_FIRST_LAUNCH, false);
             edit.apply();
         }
+        ForkChangelog.showIfUpdated(this, prefs, firstLaunch);
     }
 
     public boolean isDrawerOpen() {

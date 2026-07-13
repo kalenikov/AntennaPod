@@ -29,6 +29,7 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
     private static final String PREF_CATEGORY_PROJECT = "project";
     private static final String PREF_ABOUT = "prefAbout";
     private static final String PREF_NOTIFICATION = "notifications";
+    private static final String PREF_SCREEN_KALENIKOVPOD = "prefScreenKalenikovPod";
     private static final String PREF_CONTRIBUTE = "prefContribute";
 
     @Override
@@ -95,6 +96,10 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
             ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_notifications);
             return true;
         });
+        findPreference(PREF_SCREEN_KALENIKOVPOD).setOnPreferenceClickListener(preference -> {
+            ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_kalenikovpod);
+            return true;
+        });
         findPreference(PREF_ABOUT).setOnPreferenceClickListener(
                 preference -> {
                     getParentFragmentManager().beginTransaction()
@@ -148,6 +153,8 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_synchronization));
         config.index(R.xml.preferences_notifications)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_notifications));
+        config.index(R.xml.preferences_kalenikovpod)
+                .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.preferences_kalenikovpod));
         config.index(R.xml.feed_settings)
                 .addBreadcrumb(PreferenceActivity.getTitleOfPage(R.xml.feed_settings));
         config.index(R.xml.preferences_swipe)

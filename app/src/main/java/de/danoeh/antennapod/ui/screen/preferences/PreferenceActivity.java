@@ -77,6 +77,8 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             prefFragment = new PlaybackPreferencesFragment();
         } else if (screen == R.xml.preferences_notifications) {
             prefFragment = new NotificationPreferencesFragment();
+        } else if (screen == R.xml.preferences_kalenikovpod) {
+            prefFragment = new KalenikovPodPreferencesFragment();
         } else if (screen == R.xml.preferences_swipe) {
             prefFragment = new SwipePreferencesFragment();
         } else if (screen == R.xml.preferences_auto_deletion) {
@@ -100,6 +102,8 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             return R.string.synchronization_pref;
         } else if (preferences == R.xml.preferences_notifications) {
             return R.string.notification_pref_fragment;
+        } else if (preferences == R.xml.preferences_kalenikovpod) {
+            return R.string.kalenikovpod_pref;
         } else if (preferences == R.xml.feed_settings) {
             return R.string.feed_settings_label;
         } else if (preferences == R.xml.preferences_swipe) {
