@@ -16,6 +16,10 @@
                 android:key="prefForkFeatures"
                 android:title="@string/fork_features_label"
                 android:summary="@string/fork_features_summary"/>
+        <Preference
+                android:key="prefForkUpdate"
+                android:title="@string/fork_update_label"
+                android:summary="@string/fork_update_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/database">

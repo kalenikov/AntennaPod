@@ -67,6 +67,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String PREF_ROOT_IMPORT_FROM_STOCK = "prefRootImportFromStock";
     private static final String PREF_VIEW_LOGS = "prefViewLogs";
     private static final String PREF_FORK_FEATURES = "prefForkFeatures";
+    private static final String PREF_FORK_UPDATE = "prefForkUpdate";
     private static final String DEFAULT_OPML_OUTPUT_NAME = "antennapod-feeds-%s.opml";
     private static final String CONTENT_TYPE_OPML = "text/x-opml";
     private static final String DEFAULT_HTML_OUTPUT_NAME = "antennapod-feeds-%s.html";
@@ -199,6 +200,84 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
                     startActivity(new Intent(getContext(), ForkFeaturesActivity.class));
                     return true;
                 });
+        findPreference(PREF_FORK_UPDATE).setOnPreferenceClickListener(
+                preference -> {
+                    checkForkUpdate();
+                    return true;
+                });
+    }
+
+    private void checkForkUpdate() {
+        ProgressDialog progress = new ProgressDialog(getContext());
+        progress.setMessage(getString(R.string.fork_update_checking));
+        progress.setCancelable(false);
+        progress.show();
+        new Thread(() -> {
+            try {
+                ForkUpdateChecker.UpdateInfo info =
+                        ForkUpdateChecker.checkLatest(ForkUpdateChecker.DEFAULT_API_URL);
+                runOnUiThreadIfAdded(() -> {
+                    progress.dismiss();
+                    if (info.isNewerThanInstalled()) {
+                        new MaterialAlertDialogBuilder(getActivity())
+                                .setTitle(R.string.fork_update_available_title)
+                                .setMessage(getString(R.string.fork_update_available, info.tag))
+                                .setNegativeButton(R.string.cancel_label, null)
+                                .setPositiveButton(R.string.confirm_label,
+                                        (dialog, which) -> downloadAndInstallForkUpdate(info))
+                                .show();
+                    } else {
+                        new MaterialAlertDialogBuilder(getActivity())
+                                .setMessage(getString(R.string.fork_update_latest,
+                                        ForkUpdateChecker.FORK_VERSION))
+                                .setPositiveButton(android.R.string.ok, null)
+                                .show();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Fork update check failed", e);
+                runOnUiThreadIfAdded(() -> {
+                    progress.dismiss();
+                    new MaterialAlertDialogBuilder(getActivity())
+                            .setMessage(getString(R.string.fork_update_error, e.getMessage()))
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                });
+            }
+        }).start();
+    }
+
+    private void downloadAndInstallForkUpdate(ForkUpdateChecker.UpdateInfo info) {
+        ProgressDialog progress = new ProgressDialog(getContext());
+        progress.setMessage(getString(R.string.fork_update_downloading, info.tag));
+        progress.setCancelable(false);
+        progress.show();
+        Context appContext = getContext().getApplicationContext();
+        new Thread(() -> {
+            try {
+                File apk = ForkUpdateChecker.downloadApk(appContext, info);
+                runOnUiThreadIfAdded(() -> {
+                    progress.dismiss();
+                    ForkUpdateChecker.installApk(appContext, apk);
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Fork update download failed", e);
+                runOnUiThreadIfAdded(() -> {
+                    progress.dismiss();
+                    new MaterialAlertDialogBuilder(getActivity())
+                            .setMessage(getString(R.string.fork_update_error, e.getMessage()))
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                });
+            }
+        }).start();
+    }
+
+    private void runOnUiThreadIfAdded(Runnable action) {
+        Activity activity = getActivity();
+        if (activity != null && isAdded()) {
+            activity.runOnUiThread(action);
+        }
     }
 
     private void confirmRootImport() {

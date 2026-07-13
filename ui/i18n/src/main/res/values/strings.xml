@@ -698,6 +698,17 @@
     <string name="fork_feat_ytcull_desc">Отметка эпизода просмотренным уводит видео из плейлиста Download на YouTube (через сервер синхронизации).</string>
     <string name="fork_feat_watchedsync_title">Синхронизация «просмотрено» между телефонами</string>
     <string name="fork_feat_watchedsync_desc">Ручная отметка эпизода просмотренным на одном телефоне прячет его и на втором. Работает и после оффлайна — досинхронизируется при связи.</string>
+    <string name="fork_feat_v7">fork.7</string>
+    <string name="fork_feat_update_title">Проверка обновлений форка</string>
+    <string name="fork_feat_update_desc">Кнопка в настройках проверяет последний релиз на GitHub, скачивает APK и открывает установщик.</string>
+    <string name="fork_update_label">Проверить обновления</string>
+    <string name="fork_update_summary">Проверить, вышла ли новая версия KalenikovPod на GitHub</string>
+    <string name="fork_update_checking">Проверяю обновления…</string>
+    <string name="fork_update_latest">Установлена последняя версия (%1$s)</string>
+    <string name="fork_update_available_title">Доступно обновление</string>
+    <string name="fork_update_available">Вышла версия %1$s. Скачать и установить?</string>
+    <string name="fork_update_downloading">Скачиваю %1$s…</string>
+    <string name="fork_update_error">Не удалось проверить обновления: %1$s</string>
     <string name="please_wait">Please wait&#8230;</string>
     <string name="export_error_label">Export error</string>
     <string name="export_success_title">Export successful</string>
