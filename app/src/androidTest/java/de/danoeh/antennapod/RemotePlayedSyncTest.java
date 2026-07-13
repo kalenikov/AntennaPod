@@ -14,11 +14,13 @@ import de.danoeh.antennapod.net.sync.serviceinterface.EpisodeAction;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -73,9 +75,15 @@ public class RemotePlayedSyncTest {
                 .build();
         SyncService.applyRemotePlayActions(ctx, Collections.singletonList(played));
 
-        FeedItem after = DBReader.getFeedItem(id);
-        assertNotNull("item should still exist", after);
+        // applyRemotePlayActions persists via DBWriter's async executor — poll instead of
+        // reading back immediately (immediate read races with writes queued by other tests).
+        Awaitility.await("episode marked played")
+                .atMost(15, TimeUnit.SECONDS)
+                .until(() -> {
+                    FeedItem after = DBReader.getFeedItem(id);
+                    return after != null && after.isPlayed();
+                });
         assertTrue("remote completed PLAY action should have marked the episode played",
-                after.isPlayed());
+                DBReader.getFeedItem(id).isPlayed());
     }
 }
