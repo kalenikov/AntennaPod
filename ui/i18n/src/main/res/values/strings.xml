@@ -681,6 +681,23 @@
     <string name="log_copied">Скопировано</string>
     <string name="log_loading">Загрузка…</string>
     <string name="log_empty">Лог пуст. Запустите импорт из AntennaPod.</string>
+    <!-- KalenikovPod fork: features list screen -->
+    <string name="fork_features_label">Фичи форка</string>
+    <string name="fork_features_summary">Список доработок KalenikovPod поверх AntennaPod</string>
+    <string name="fork_features_title">Фичи KalenikovPod</string>
+    <string name="fork_feat_v1">fork.1</string>
+    <string name="fork_feat_v2">fork.2</string>
+    <string name="fork_feat_v5">fork.5</string>
+    <string name="fork_feat_delete_title">Удаление по команде с сервера</string>
+    <string name="fork_feat_delete_desc">Когда видео убирают из плейлиста Download, эпизод исчезает из приложения — и запись, и скачанный файл.</string>
+    <string name="fork_feat_migrate_title">Перенос данных из AntennaPod (root)</string>
+    <string name="fork_feat_migrate_desc">Кнопка миграции: подписки, статусы эпизодов, настройки отдельных подписок и все глобальные настройки переносятся со стокового AntennaPod.</string>
+    <string name="fork_feat_logs_title">Экран логов</string>
+    <string name="fork_feat_logs_desc">Просмотр, копирование и очистка логов миграции и приложения прямо на телефоне, без компьютера.</string>
+    <string name="fork_feat_ytcull_title">«Просмотрено» → убрать из YouTube Download</string>
+    <string name="fork_feat_ytcull_desc">Отметка эпизода просмотренным уводит видео из плейлиста Download на YouTube (через сервер синхронизации).</string>
+    <string name="fork_feat_watchedsync_title">Синхронизация «просмотрено» между телефонами</string>
+    <string name="fork_feat_watchedsync_desc">Ручная отметка эпизода просмотренным на одном телефоне прячет его и на втором. Работает и после оффлайна — досинхронизируется при связи.</string>
     <string name="please_wait">Please wait&#8230;</string>
     <string name="export_error_label">Export error</string>
     <string name="export_success_title">Export successful</string>

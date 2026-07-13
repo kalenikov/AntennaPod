@@ -66,6 +66,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private static final String PREF_FAVORITE_EXPORT = "prefFavoritesExport";
     private static final String PREF_ROOT_IMPORT_FROM_STOCK = "prefRootImportFromStock";
     private static final String PREF_VIEW_LOGS = "prefViewLogs";
+    private static final String PREF_FORK_FEATURES = "prefForkFeatures";
     private static final String DEFAULT_OPML_OUTPUT_NAME = "antennapod-feeds-%s.opml";
     private static final String CONTENT_TYPE_OPML = "text/x-opml";
     private static final String DEFAULT_HTML_OUTPUT_NAME = "antennapod-feeds-%s.html";
@@ -191,6 +192,11 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
         findPreference(PREF_VIEW_LOGS).setOnPreferenceClickListener(
                 preference -> {
                     openLogViewer(null);
+                    return true;
+                });
+        findPreference(PREF_FORK_FEATURES).setOnPreferenceClickListener(
+                preference -> {
+                    startActivity(new Intent(getContext(), ForkFeaturesActivity.class));
                     return true;
                 });
     }

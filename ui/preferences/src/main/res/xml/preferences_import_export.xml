@@ -12,6 +12,10 @@
                 android:key="prefViewLogs"
                 android:title="@string/view_logs_label"
                 android:summary="@string/view_logs_summary"/>
+        <Preference
+                android:key="prefForkFeatures"
+                android:title="@string/fork_features_label"
+                android:summary="@string/fork_features_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/database">

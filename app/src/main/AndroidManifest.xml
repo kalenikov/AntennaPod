@@ -149,6 +149,12 @@
             android:label="@string/log_viewer_title"/>
 
         <activity
+            android:name=".ui.screen.preferences.ForkFeaturesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:label="@string/fork_features_title"/>
+
+        <activity
             android:name=".activity.OpmlImportActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/opml_import_label"
