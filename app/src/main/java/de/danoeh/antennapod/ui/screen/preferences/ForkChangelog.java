@@ -54,18 +54,27 @@ public class ForkChangelog {
      * recorded, so the dialog only ever appears for versions the user skipped over.
      */
     public static void showIfUpdated(Context context, SharedPreferences prefs, boolean firstLaunch) {
+        if (shouldShowAndMark(prefs, firstLaunch)) {
+            show(context);
+        }
+    }
+
+    /**
+     * Decides whether the "What's new" dialog is due and records the current version in prefs.
+     * Public static so the decision logic can be tested without launching MainActivity (which
+     * never reaches RESUMED under instrumentation because of system permission dialogs).
+     */
+    public static boolean shouldShowAndMark(SharedPreferences prefs, boolean firstLaunch) {
         String lastSeen = prefs.getString(PREF_LAST_SEEN_FORK_VERSION, null);
         boolean updated = ForkUpdateChecker.parseForkNumber(lastSeen)
                 < ForkUpdateChecker.parseForkNumber(ForkUpdateChecker.FORK_VERSION);
         if (lastSeen == null && firstLaunch) {
             updated = false;
         }
-        if (updated) {
-            show(context);
-        }
         if (updated || lastSeen == null) {
             prefs.edit().putString(PREF_LAST_SEEN_FORK_VERSION, ForkUpdateChecker.FORK_VERSION).apply();
         }
+        return updated;
     }
 
     public static View buildDialogView(Context context) {
