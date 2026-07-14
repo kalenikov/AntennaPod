@@ -146,6 +146,7 @@ public class SubscriptionFragment extends Fragment
         }
         ((MainActivity) getActivity()).setupToolbarToggle(toolbar, displayUpArrow);
         toolbar.inflateMenu(R.menu.subscriptions);
+        updateCounterFilterIcon();
         for (int i = 1; i < COLUMN_CHECKBOX_IDS.length; i++) {
             // Do this in Java to localize numbers
             toolbar.getMenu().findItem(COLUMN_CHECKBOX_IDS[i])
@@ -199,6 +200,7 @@ public class SubscriptionFragment extends Fragment
             toolbar.getMenu().removeItem(R.id.subscriptions_filter);
             toolbar.getMenu().removeItem(R.id.refresh_item);
             toolbar.getMenu().removeItem(R.id.subscriptions_counter);
+            toolbar.getMenu().removeItem(R.id.subscriptions_filter_counter);
             toolbar.getMenu().removeItem(R.id.show_archive);
             floatingSelectMenu.getMenu().removeItem(R.id.keep_updated);
             floatingSelectMenu.getMenu().removeItem(R.id.notify_new_episodes);
@@ -274,6 +276,13 @@ public class SubscriptionFragment extends Fragment
             String label = FeedCounterDialog.cycleCounterSetting(requireContext());
             Toast.makeText(requireContext(),
                     getString(R.string.fork_counter_switched, label), Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (itemId == R.id.subscriptions_filter_counter) {
+            boolean active = ForkFilterToggle.toggleCounterFilter();
+            updateCounterFilterIcon();
+            Toast.makeText(requireContext(), active
+                    ? R.string.fork_filter_counter_on : R.string.fork_filter_counter_off,
+                    Toast.LENGTH_SHORT).show();
             return true;
         } else if (itemId == R.id.subscription_display_list) {
             setColumnNumber(1);
@@ -458,6 +467,13 @@ public class SubscriptionFragment extends Fragment
                         Log.e(TAG, Log.getStackTraceString(error));
                     });
         updateFilterVisibility();
+    }
+
+    private void updateCounterFilterIcon() {
+        MenuItem item = toolbar.getMenu().findItem(R.id.subscriptions_filter_counter);
+        if (item != null && item.getIcon() != null) {
+            item.getIcon().mutate().setAlpha(ForkFilterToggle.isCounterFilterActive() ? 255 : 110);
+        }
     }
 
     private void updateFilterVisibility() {

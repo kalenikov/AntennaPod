@@ -33,6 +33,7 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_settings_title, R.string.fork_feat_settings_desc, R.string.fork_feat_v9},
             {R.string.fork_feat_pincover_title, R.string.fork_feat_pincover_desc, R.string.fork_feat_v10},
             {R.string.fork_feat_counter_title, R.string.fork_feat_counter_desc, R.string.fork_feat_v11},
+            {R.string.fork_feat_filtertoggle_title, R.string.fork_feat_filtertoggle_desc, R.string.fork_feat_v12},
     };
 
     @Override
