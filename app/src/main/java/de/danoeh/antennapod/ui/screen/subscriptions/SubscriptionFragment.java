@@ -33,6 +33,7 @@ import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.event.UnreadItemsUpdateEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
@@ -273,9 +274,22 @@ public class SubscriptionFragment extends Fragment
             FeedSortDialog.showDialog(requireContext());
             return true;
         } else if (itemId == R.id.subscriptions_counter) {
-            String label = FeedCounterDialog.cycleCounterSetting(requireContext());
-            Toast.makeText(requireContext(),
-                    getString(R.string.fork_counter_switched, label), Toast.LENGTH_SHORT).show();
+            updateCounterMenuCheck();
+            return true; // opens the dropdown submenu
+        } else if (itemId == R.id.counter_show_new) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_NEW);
+            return true;
+        } else if (itemId == R.id.counter_show_unplayed) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_UNPLAYED);
+            return true;
+        } else if (itemId == R.id.counter_show_downloaded) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_DOWNLOADED);
+            return true;
+        } else if (itemId == R.id.counter_show_downloaded_unplayed) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_DOWNLOADED_UNPLAYED);
+            return true;
+        } else if (itemId == R.id.counter_show_none) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_NONE);
             return true;
         } else if (itemId == R.id.subscriptions_filter_counter) {
             boolean active = ForkFilterToggle.toggleCounterFilter();
@@ -467,6 +481,27 @@ public class SubscriptionFragment extends Fragment
                         Log.e(TAG, Log.getStackTraceString(error));
                     });
         updateFilterVisibility();
+    }
+
+    private void updateCounterMenuCheck() {
+        MenuItem parent = toolbar.getMenu().findItem(R.id.subscriptions_counter);
+        if (parent == null || parent.getSubMenu() == null) {
+            return;
+        }
+        FeedCounter current = UserPreferences.getFeedCounterSetting();
+        int checkedId;
+        if (current == FeedCounter.SHOW_NEW) {
+            checkedId = R.id.counter_show_new;
+        } else if (current == FeedCounter.SHOW_UNPLAYED) {
+            checkedId = R.id.counter_show_unplayed;
+        } else if (current == FeedCounter.SHOW_DOWNLOADED) {
+            checkedId = R.id.counter_show_downloaded;
+        } else if (current == FeedCounter.SHOW_DOWNLOADED_UNPLAYED) {
+            checkedId = R.id.counter_show_downloaded_unplayed;
+        } else {
+            checkedId = R.id.counter_show_none;
+        }
+        parent.getSubMenu().findItem(checkedId).setChecked(true);
     }
 
     private void updateCounterFilterIcon() {

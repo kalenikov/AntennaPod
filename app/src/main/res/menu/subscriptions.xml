@@ -15,7 +15,27 @@
             android:id="@+id/subscriptions_counter"
             android:icon="@drawable/ic_counter"
             android:title="@string/pref_nav_drawer_feed_counter_title"
-            custom:showAsAction="always" />
+            custom:showAsAction="always">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                        android:id="@+id/counter_show_new"
+                        android:title="@string/drawer_feed_counter_inbox"/>
+                <item
+                        android:id="@+id/counter_show_unplayed"
+                        android:title="@string/drawer_feed_counter_unplayed"/>
+                <item
+                        android:id="@+id/counter_show_downloaded"
+                        android:title="@string/drawer_feed_counter_downloaded"/>
+                <item
+                        android:id="@+id/counter_show_downloaded_unplayed"
+                        android:title="@string/drawer_feed_counter_downloaded_unplayed"/>
+                <item
+                        android:id="@+id/counter_show_none"
+                        android:title="@string/drawer_feed_counter_none"/>
+            </group>
+        </menu>
+    </item>
     <item
             android:id="@+id/subscriptions_filter_counter"
             android:icon="@drawable/ic_filter_counter"

@@ -739,10 +739,9 @@
     <string name="fork_feat_v10">fork.10</string>
     <string name="fork_feat_pincover_title">Закрепление каналов и свои обложки</string>
     <string name="fork_feat_pincover_desc">Долгое нажатие на канал: закрепить сверху списка; заменить лого буквой, своим текстом или картинкой из галереи.</string>
-    <string name="fork_counter_switched">Счётчик: %1$s</string>
     <string name="fork_feat_v11">fork.11</string>
     <string name="fork_feat_counter_title">Кнопка счётчика в панели подписок</string>
-    <string name="fork_feat_counter_desc">Кнопка «#» рядом с поиском и статистикой циклически переключает режим счётчика на обложках каналов.</string>
+    <string name="fork_feat_counter_desc">Кнопка «#» рядом с поиском и статистикой открывает меню выбора режима счётчика на обложках каналов.</string>
     <string name="fork_filter_counter_on">Фильтр: только каналы с ненулевым счётчиком</string>
     <string name="fork_filter_counter_off">Фильтр по счётчику снят</string>
     <string name="fork_feat_v12">fork.12</string>
@@ -750,7 +749,7 @@
     <string name="fork_feat_filtertoggle_desc">Кнопка-воронка в панели подписок включает/выключает фильтр «ненулевой счётчик», не трогая остальные фильтры.</string>
     <string name="fork_cl_v12" translatable="false">fork.12</string>
     <string name="fork_cl_v12_date" translatable="false">2026-07-14</string>
-    <string name="fork_cl_v12_text">• Кнопка-переключатель фильтра «ненулевой счётчик» в панели подписок</string>
+    <string name="fork_cl_v12_text">• Кнопка-переключатель фильтра «ненулевой счётчик» в панели подписок\n• Кнопка счётчика теперь открывает выпадающее меню вместо переключения по кругу</string>
     <string name="fork_cl_v11" translatable="false">fork.11</string>
     <string name="fork_cl_v11_date" translatable="false">2026-07-14</string>
     <string name="fork_cl_v11_text">• Кнопка счётчика в панели подписок — переключает режим счётчика по кругу</string>
