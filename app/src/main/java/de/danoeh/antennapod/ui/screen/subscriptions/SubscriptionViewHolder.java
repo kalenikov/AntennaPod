@@ -54,10 +54,15 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         CoverLoader coverLoader = new CoverLoader();
         boolean textAndImageCombined = feed.isLocalFeed() && feed.getImageUrl() != null
                 && feed.getImageUrl().startsWith(Feed.PREFIX_GENERATIVE_COVER);
-        coverLoader.withUri(feed.getImageUrl());
+        String tileText = ForkCoverOverride.tileText(feed);
+        if (tileText != null) {
+            fallbackTitle.setText(tileText);
+            textAndImageCombined = true;
+        }
+        coverLoader.withUri(ForkCoverOverride.effectiveImageUrl(feed));
         errorIcon.setVisibility(feed.hasLastUpdateFailed() ? View.VISIBLE : View.GONE);
 
-        if (UserPreferences.shouldShowSubscriptionTitle() || columnCount == 1) {
+        if ((UserPreferences.shouldShowSubscriptionTitle() || columnCount == 1) && tileText == null) {
             // No need for fallback title when already showing title
             fallbackTitle.setVisibility(View.GONE);
         } else {

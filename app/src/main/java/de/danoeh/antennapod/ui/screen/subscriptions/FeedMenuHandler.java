@@ -13,8 +13,11 @@ import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
+import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.ui.share.ShareUtils;
+import org.greenrobot.eventbus.EventBus;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -63,6 +66,10 @@ public abstract class FeedMenuHandler {
                     .show(fragment.getChildFragmentManager(), null);
         } else if (menuItemId == R.id.share_feed) {
             ShareUtils.shareFeedLink(context, selectedFeed);
+        } else if (menuItemId == R.id.pin_feed_item) {
+            ForkFeedCustomization.setPinned(selectedFeed.getId(),
+                    !ForkFeedCustomization.isPinned(selectedFeed.getId()));
+            EventBus.getDefault().post(new FeedListUpdateEvent(selectedFeed));
         } else {
             return false;
         }

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.SelectableAdapter;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -166,6 +167,9 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
         }
         MenuInflater inflater = mainActivityRef.get().getMenuInflater();
         inflater.inflate(R.menu.nav_feed_context, menu);
+        menu.findItem(R.id.pin_feed_item).setTitle(
+                ForkFeedCustomization.isPinned(selectedItem.getId())
+                        ? R.string.fork_unpin_feed_label : R.string.fork_pin_feed_label);
         menu.findItem(R.id.multi_select).setVisible(true);
         menu.setHeaderTitle(selectedItem.getTitle());
     }

@@ -2,6 +2,7 @@ package de.danoeh.antennapod.ui.screen.subscriptions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -9,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
@@ -20,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
@@ -32,6 +37,7 @@ import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.MenuItemUtils;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
@@ -49,6 +55,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -96,6 +106,10 @@ public class SubscriptionFragment extends Fragment
     private RecyclerView.ItemDecoration itemDecoration;
     private List<Feed> feeds;
     private int stateToShow = Feed.STATE_SUBSCRIBED;
+
+    private long pendingCoverFeedId = -1;
+    private final ActivityResultLauncher<String[]> coverPickLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(), this::onCoverImagePicked);
 
     public static SubscriptionFragment newInstance(int state) {
         SubscriptionFragment fragment = new SubscriptionFragment();
@@ -474,7 +488,96 @@ public class SubscriptionFragment extends Fragment
         if (item.getItemId() == R.id.multi_select) {
             return subscriptionAdapter.onContextItemSelected(item);
         }
+        if (item.getItemId() == R.id.customize_cover_item) {
+            showCoverCustomizationDialog(selectedFeed);
+            return true;
+        }
         return FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedFeed, this::loadSubscriptionsAndTags);
+    }
+
+    private void showCoverCustomizationDialog(Feed feed) {
+        String[] options = {
+                getString(R.string.fork_cover_option_default),
+                getString(R.string.fork_cover_option_letter),
+                getString(R.string.fork_cover_option_text),
+                getString(R.string.fork_cover_option_image)};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(feed.getTitle())
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        setCoverOverrideAndRefresh(feed, null);
+                    } else if (which == 1) {
+                        setCoverOverrideAndRefresh(feed, ForkFeedCustomization.COVER_LETTER);
+                    } else if (which == 2) {
+                        showCoverTextDialog(feed);
+                    } else {
+                        pendingCoverFeedId = feed.getId();
+                        coverPickLauncher.launch(new String[] {"image/*"});
+                    }
+                })
+                .show();
+    }
+
+    private void showCoverTextDialog(Feed feed) {
+        EditText input = new EditText(requireContext());
+        input.setHint(R.string.fork_cover_text_hint);
+        String override = ForkFeedCustomization.getCoverOverride(feed.getId());
+        if (override != null && override.startsWith(ForkFeedCustomization.COVER_TEXT_PREFIX)) {
+            input.setText(override.substring(ForkFeedCustomization.COVER_TEXT_PREFIX.length()));
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.fork_cover_option_text)
+                .setView(input)
+                .setNegativeButton(R.string.cancel_label, null)
+                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                    String text = input.getText().toString().trim();
+                    if (!text.isEmpty()) {
+                        setCoverOverrideAndRefresh(feed, ForkFeedCustomization.COVER_TEXT_PREFIX + text);
+                    }
+                })
+                .show();
+    }
+
+    private void setCoverOverrideAndRefresh(Feed feed, String override) {
+        ForkFeedCustomization.setCoverOverride(feed.getId(), override);
+        EventBus.getDefault().post(new FeedListUpdateEvent(feed));
+    }
+
+    private void onCoverImagePicked(Uri uri) {
+        long feedId = pendingCoverFeedId;
+        pendingCoverFeedId = -1;
+        if (uri == null || feedId < 0) {
+            return;
+        }
+        Context appContext = requireContext().getApplicationContext();
+        new Thread(() -> {
+            try {
+                File dir = new File(appContext.getFilesDir(), "fork-covers");
+                if (!dir.exists() && !dir.mkdirs()) {
+                    throw new IOException("Cannot create " + dir);
+                }
+                File[] old = dir.listFiles((d, name) -> name.startsWith(feedId + "-"));
+                if (old != null) {
+                    for (File file : old) {
+                        file.delete();
+                    }
+                }
+                File target = new File(dir, feedId + "-" + System.currentTimeMillis() + ".img");
+                try (InputStream in = appContext.getContentResolver().openInputStream(uri);
+                     FileOutputStream out = new FileOutputStream(target)) {
+                    byte[] chunk = new byte[8192];
+                    int n;
+                    while ((n = in.read(chunk)) != -1) {
+                        out.write(chunk, 0, n);
+                    }
+                }
+                ForkFeedCustomization.setCoverOverride(feedId,
+                        ForkFeedCustomization.COVER_IMAGE_PREFIX + target.getAbsolutePath());
+                EventBus.getDefault().post(new FeedListUpdateEvent(feedId));
+            } catch (Exception e) {
+                Log.e(TAG, "Custom cover import failed", e);
+            }
+        }).start();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -28,6 +28,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.ImagePlaceholder;
 import de.danoeh.antennapod.ui.screen.InboxFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
+import de.danoeh.antennapod.ui.screen.subscriptions.ForkCoverOverride;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionFragment;
 
 import java.lang.ref.WeakReference;
@@ -252,7 +253,7 @@ public class NavListAdapter extends RecyclerView.Adapter<NavListAdapter.Holder>
 
         float radius = 4 * context.getResources().getDisplayMetrics().density;
         Glide.with(context)
-                .load(feed.getImageUrl())
+                .load(ForkCoverOverride.effectiveImageUrl(feed))
                 .apply(new RequestOptions()
                     .placeholder(ImagePlaceholder.getDrawable(context, radius))
                     .error(ImagePlaceholder.getDrawable(context, radius))

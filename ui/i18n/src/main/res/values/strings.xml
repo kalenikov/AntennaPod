@@ -728,6 +728,20 @@
     <string name="fork_feat_v9">fork.9</string>
     <string name="fork_feat_settings_title">Перенос настроек без root</string>
     <string name="fork_feat_settings_desc">Экспорт настроек в файл на одном телефоне и импорт на другом — вместе со штатным экспортом базы данных заменяет root-миграцию.</string>
+    <string name="fork_pin_feed_label">Закрепить</string>
+    <string name="fork_unpin_feed_label">Открепить</string>
+    <string name="fork_customize_cover_label">Оформление обложки…</string>
+    <string name="fork_cover_option_default">Стандартное лого</string>
+    <string name="fork_cover_option_letter">Первая буква названия</string>
+    <string name="fork_cover_option_text">Свой текст…</string>
+    <string name="fork_cover_option_image">Своя картинка…</string>
+    <string name="fork_cover_text_hint">Короткий текст</string>
+    <string name="fork_feat_v10">fork.10</string>
+    <string name="fork_feat_pincover_title">Закрепление каналов и свои обложки</string>
+    <string name="fork_feat_pincover_desc">Долгое нажатие на канал: закрепить сверху списка; заменить лого буквой, своим текстом или картинкой из галереи.</string>
+    <string name="fork_cl_v10" translatable="false">fork.10</string>
+    <string name="fork_cl_v10_date" translatable="false">2026-07-14</string>
+    <string name="fork_cl_v10_text">• Закрепление каналов сверху списка (контекстное меню)\n• Оформление обложки: буква названия, свой текст или картинка из галереи</string>
     <string name="fork_cl_v9" translatable="false">fork.9</string>
     <string name="fork_cl_v9_date" translatable="false">2026-07-13</string>
     <string name="fork_cl_v9_text">• Экспорт и импорт настроек файлом — перенос на телефон без root</string>

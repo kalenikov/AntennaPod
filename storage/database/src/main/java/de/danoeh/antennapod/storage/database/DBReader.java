@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.danoeh.antennapod.model.feed.Chapter;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -714,7 +715,11 @@ public final class DBReader {
                 break;
         }
 
-        Collections.sort(feeds, comparator);
+        final Comparator<Feed> baseComparator = comparator;
+        Collections.sort(feeds, (lhs, rhs) -> {
+            int pinned = ForkFeedCustomization.comparePinned(lhs.getId(), rhs.getId());
+            return pinned != 0 ? pinned : baseComparator.compare(lhs, rhs);
+        });
         final int queueSize = adapter.getQueueSize();
         final int numNewItems = getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.NEW));
         final int numDownloadedItems = getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED));

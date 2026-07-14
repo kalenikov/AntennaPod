@@ -2,6 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/pin_feed_item"
+        android:menuCategory="container"
+        android:title="@string/fork_pin_feed_label" />
+
+    <item
+        android:id="@+id/customize_cover_item"
+        android:menuCategory="container"
+        android:title="@string/fork_customize_cover_label" />
+
+    <item
         android:id="@+id/remove_all_inbox_item"
         android:menuCategory="container"
         android:title="@string/remove_all_inbox_label" />
