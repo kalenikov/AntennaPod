@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.CoverLoader;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -22,6 +23,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
     public final TextView count;
     public final TextView fallbackTitle;
     public final ImageView gradient;
+    public final ImageView pinIcon;
     public final ImageView selectIcon;
     public final CardView card;
     public final View errorIcon;
@@ -34,6 +36,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         count = itemView.findViewById(R.id.countViewPill);
         fallbackTitle = itemView.findViewById(R.id.fallbackTitleLabel);
         gradient = itemView.findViewById(R.id.gradientOverlay);
+        pinIcon = itemView.findViewById(R.id.pinIcon);
         selectIcon = itemView.findViewById(R.id.selectedIcon);
         card = itemView.findViewById(R.id.outerContainer);
         errorIcon = itemView.findViewById(R.id.errorIcon);
@@ -61,6 +64,10 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         }
         coverLoader.withUri(ForkCoverOverride.effectiveImageUrl(feed));
         errorIcon.setVisibility(feed.hasLastUpdateFailed() ? View.VISIBLE : View.GONE);
+        if (pinIcon != null) {
+            pinIcon.setVisibility(
+                    ForkFeedCustomization.isPinned(feed.getId()) ? View.VISIBLE : View.GONE);
+        }
 
         if ((UserPreferences.shouldShowSubscriptionTitle() || columnCount == 1) && tileText == null) {
             // No need for fallback title when already showing title
