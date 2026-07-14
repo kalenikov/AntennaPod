@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -270,7 +271,9 @@ public class SubscriptionFragment extends Fragment
             FeedSortDialog.showDialog(requireContext());
             return true;
         } else if (itemId == R.id.subscriptions_counter) {
-            FeedCounterDialog.showDialog(requireContext());
+            String label = FeedCounterDialog.cycleCounterSetting(requireContext());
+            Toast.makeText(requireContext(),
+                    getString(R.string.fork_counter_switched, label), Toast.LENGTH_SHORT).show();
             return true;
         } else if (itemId == R.id.subscription_display_list) {
             setColumnNumber(1);
