@@ -20,19 +20,19 @@
             <group android:checkableBehavior="single">
                 <item
                         android:id="@+id/counter_show_new"
-                        android:title="@string/drawer_feed_counter_inbox"/>
+                        android:title="@string/fork_counter_short_inbox"/>
                 <item
                         android:id="@+id/counter_show_unplayed"
-                        android:title="@string/drawer_feed_counter_unplayed"/>
+                        android:title="@string/fork_counter_short_unplayed"/>
                 <item
                         android:id="@+id/counter_show_downloaded"
-                        android:title="@string/drawer_feed_counter_downloaded"/>
+                        android:title="@string/fork_counter_short_downloaded"/>
                 <item
                         android:id="@+id/counter_show_downloaded_unplayed"
-                        android:title="@string/drawer_feed_counter_downloaded_unplayed"/>
+                        android:title="@string/fork_counter_short_downloaded_unplayed"/>
                 <item
                         android:id="@+id/counter_show_none"
-                        android:title="@string/drawer_feed_counter_none"/>
+                        android:title="@string/fork_counter_short_none"/>
             </group>
         </menu>
     </item>
