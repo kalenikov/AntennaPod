@@ -14,7 +14,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.HashMap;
+
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
+import de.danoeh.antennapod.storage.database.SubscriptionsFilterExecutor;
 import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,6 +41,7 @@ public class ForkFeedCustomizationTest {
     public void setUp() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         ForkFeedCustomization.init(context);
+        UserPreferences.init(context);
         for (long id = 1; id <= 5; id++) {
             ForkFeedCustomization.setPinned(id, false);
             ForkFeedCustomization.setCoverOverride(id, null);
@@ -56,6 +65,34 @@ public class ForkFeedCustomizationTest {
 
         ForkFeedCustomization.setPinned(3, false);
         assertFalse(ForkFeedCustomization.isPinned(3));
+    }
+
+    @Test
+    public void pinnedFeedSurvivesFilters() {
+        ForkFeedCustomization.setPinned(1, true);
+        Feed pinned = makeFeed(1);
+        Feed regular = makeFeed(2);
+        List<Feed> feeds = Arrays.asList(pinned, regular);
+
+        // Counter filter: both feeds have counter 0 — only the pinned one must survive.
+        List<Feed> filtered = SubscriptionsFilterExecutor.filter(feeds, new HashMap<>(),
+                new SubscriptionsFilter(SubscriptionsFilter.COUNTER_GREATER_ZERO));
+        assertEquals(1, filtered.size());
+        assertEquals(1L, filtered.get(0).getId());
+
+        // Property filter (keep-updated disabled feeds only): pinned one still survives.
+        filtered = SubscriptionsFilterExecutor.filter(feeds, new HashMap<>(),
+                new SubscriptionsFilter(SubscriptionsFilter.DISABLED_UPDATES));
+        assertTrue(filtered.contains(pinned));
+    }
+
+    private Feed makeFeed(long id) {
+        Feed feed = new Feed("http://example/" + id, null, "Feed " + id);
+        feed.setId(id);
+        feed.setPreferences(new FeedPreferences(id, FeedPreferences.AutoDownloadSetting.GLOBAL,
+                FeedPreferences.AutoDeleteAction.GLOBAL, VolumeAdaptionSetting.OFF,
+                FeedPreferences.NewEpisodesAction.GLOBAL, null, null));
+        return feed;
     }
 
     @Test

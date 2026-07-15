@@ -3,6 +3,7 @@ package de.danoeh.antennapod.storage.database;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
+import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import java.util.ArrayList;
@@ -14,6 +15,12 @@ public abstract class SubscriptionsFilterExecutor {
         List<Feed> result = new ArrayList<>();
 
         for (Feed item : items) {
+            // Fork: pinned feeds always stay visible, regardless of the active filters.
+            if (ForkFeedCustomization.isPinned(item.getId())
+                    && !(filter.hideNonSubscribedFeeds && item.getState() == Feed.STATE_NOT_SUBSCRIBED)) {
+                result.add(item);
+                continue;
+            }
             FeedPreferences itemPreferences = item.getPreferences();
 
             boolean globalAutodownload = UserPreferences.isEnableAutodownloadGlobal();
@@ -47,7 +54,8 @@ public abstract class SubscriptionsFilterExecutor {
 
         if (filter.showIfCounterGreaterZero) {
             for (int i = result.size() - 1; i >= 0; i--) {
-                if (!feedCounters.containsKey(result.get(i).getId()) || feedCounters.get(result.get(i).getId()) <= 0) {
+                if ((!feedCounters.containsKey(result.get(i).getId()) || feedCounters.get(result.get(i).getId()) <= 0)
+                        && !ForkFeedCustomization.isPinned(result.get(i).getId())) {
                     result.remove(i);
                 }
             }
