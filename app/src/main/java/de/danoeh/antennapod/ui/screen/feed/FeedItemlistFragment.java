@@ -286,11 +286,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         if (feed.isLocalFeed()) {
             viewBinding.toolbar.getMenu().findItem(R.id.share_feed).setVisible(false);
         }
-        MenuItem downloadedFilterItem = viewBinding.toolbar.getMenu().findItem(R.id.filter_downloaded_item);
-        if (downloadedFilterItem != null && downloadedFilterItem.getIcon() != null) {
-            boolean active = feed.getItemFilter() != null && feed.getItemFilter().showDownloaded;
-            downloadedFilterItem.getIcon().mutate().setAlpha(active ? 255 : 110);
-        }
         if (feed.getState() == Feed.STATE_NOT_SUBSCRIBED) {
             viewBinding.toolbar.getMenu().findItem(R.id.sort_items).setVisible(false);
             viewBinding.toolbar.getMenu().findItem(R.id.refresh_item).setVisible(false);
@@ -341,21 +336,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             return true;
         } else if (item.getItemId() == R.id.remove_archive_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
-            return true;
-        } else if (item.getItemId() == R.id.filter_downloaded_item) {
-            FeedItemFilter current = feed.getItemFilter() != null
-                    ? feed.getItemFilter() : new FeedItemFilter("");
-            Set<String> values = new HashSet<>(current.getValuesList());
-            boolean enable = !current.showDownloaded;
-            if (enable) {
-                values.add(FeedItemFilter.DOWNLOADED);
-                values.remove(FeedItemFilter.NOT_DOWNLOADED);
-            } else {
-                values.remove(FeedItemFilter.DOWNLOADED);
-            }
-            DBWriter.setFeedItemsFilter(feed.getId(), values);
-            EventBus.getDefault().post(new MessageEvent(getString(enable
-                    ? R.string.fork_filter_downloaded_on : R.string.fork_filter_downloaded_off)));
             return true;
         } else if (item.getItemId() == R.id.action_search) {
             ((MainActivity) getActivity()).loadChildFragment(SearchFragment.newInstance(feed.getId(), feed.getTitle()));
@@ -524,11 +504,36 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         viewBinding.swipeRefresh.setRefreshing(event.isFeedUpdateRunning);
     }
 
+    private void toggleDownloadedFilter() {
+        if (feed == null) {
+            return;
+        }
+        FeedItemFilter current = feed.getItemFilter() != null
+                ? feed.getItemFilter() : new FeedItemFilter("");
+        Set<String> values = new HashSet<>(current.getValuesList());
+        boolean enable = !current.showDownloaded;
+        if (enable) {
+            values.add(FeedItemFilter.DOWNLOADED);
+            values.remove(FeedItemFilter.NOT_DOWNLOADED);
+        } else {
+            values.remove(FeedItemFilter.DOWNLOADED);
+        }
+        DBWriter.setFeedItemsFilter(feed.getId(), values);
+        EventBus.getDefault().post(new MessageEvent(getString(enable
+                ? R.string.fork_filter_downloaded_on : R.string.fork_filter_downloaded_off)));
+    }
+
+    private void refreshDownloadedFilterButton() {
+        boolean active = feed != null && feed.getItemFilter() != null && feed.getItemFilter().showDownloaded;
+        viewBinding.header.butFilterDownloaded.setAlpha(active ? 1f : 0.5f);
+    }
+
     private void refreshHeaderView() {
         if (viewBinding == null || feed == null) {
             Log.e(TAG, "Unable to refresh header view");
             return;
         }
+        refreshDownloadedFilterButton();
         loadFeedImage();
         if (feed.hasLastUpdateFailed()) {
             viewBinding.header.txtvFailure.setVisibility(View.VISIBLE);
@@ -581,6 +586,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         // https://github.com/bumptech/glide/issues/529
         viewBinding.imgvBackground.setColorFilter(new LightingColorFilter(0xff666666, 0x000000));
         viewBinding.header.butShowInfo.setOnClickListener(v -> showFeedInfo());
+        viewBinding.header.butFilterDownloaded.setOnClickListener(v -> toggleDownloadedFilter());
         viewBinding.header.imgvCover.setOnClickListener(v -> showFeedInfo());
         viewBinding.header.headerDescriptionLabel.setOnClickListener(v -> showFeedInfo());
         viewBinding.header.butSubscribe.setOnClickListener(view -> {

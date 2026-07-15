@@ -82,6 +82,17 @@
                 app:srcCompat="@drawable/ic_settings_white"
                 tools:visibility="visible" />
 
+            <ImageButton
+                android:id="@+id/butFilterDownloaded"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/fork_filter_downloaded_label"
+                android:scaleType="fitXY"
+                android:padding="12dp"
+                app:srcCompat="@drawable/ic_download_white"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
         <ImageView

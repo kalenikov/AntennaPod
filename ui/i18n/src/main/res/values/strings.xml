@@ -757,7 +757,7 @@
     <string name="fork_filter_downloaded_off">Фильтр по загруженным снят</string>
     <string name="fork_cl_v16" translatable="false">fork.16</string>
     <string name="fork_cl_v16_date" translatable="false">2026-07-15</string>
-    <string name="fork_cl_v16_text">• Кнопка «Только загруженные» в панели на экране канала</string>
+    <string name="fork_cl_v16_text">• Кнопка «Только загруженные» в шапке канала, рядом с фильтром и настройками</string>
     <string name="fork_cl_v15" translatable="false">fork.15</string>
     <string name="fork_cl_v15_date" translatable="false">2026-07-15</string>
     <string name="fork_cl_v15_text">• Закреплённые каналы больше не скрываются фильтрами подписок</string>
