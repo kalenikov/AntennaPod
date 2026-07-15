@@ -31,7 +31,7 @@ import okio.Okio;
  */
 public class ForkUpdateChecker {
     /** Fork version of this build. Must be bumped in every release commit, together with the tag. */
-    public static final String FORK_VERSION = "fork.14";
+    public static final String FORK_VERSION = "fork.15";
 
     public static final String DEFAULT_API_URL =
             "https://api.github.com/repos/kalenikov/AntennaPod/releases/latest";
