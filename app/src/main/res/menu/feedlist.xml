@@ -22,6 +22,12 @@
     </item>
 
     <item
+        android:id="@+id/filter_downloaded_item"
+        android:icon="@drawable/ic_download"
+        custom:showAsAction="always"
+        android:title="@string/fork_filter_downloaded_label"/>
+
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
         custom:showAsAction="always"
