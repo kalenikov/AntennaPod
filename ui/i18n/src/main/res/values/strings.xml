@@ -755,6 +755,17 @@
     <string name="fork_filter_downloaded_label">Только загруженные</string>
     <string name="fork_filter_downloaded_on">Фильтр: только загруженные эпизоды</string>
     <string name="fork_filter_downloaded_off">Фильтр по загруженным снят</string>
+    <string name="fork_title_lines_label">Строк в названии эпизода</string>
+    <string name="fork_title_lines_summary">Сколько строк занимает название в списках эпизодов</string>
+    <string name="fork_title_lines_2">2 строки</string>
+    <string name="fork_title_lines_3">3 строки</string>
+    <string name="fork_title_lines_4">4 строки</string>
+    <string name="fork_feat_v18">fork.18</string>
+    <string name="fork_feat_titlelines_title">Число строк названия эпизода</string>
+    <string name="fork_feat_titlelines_desc">Настройка в разделе KalenikovPod: название эпизода в списках занимает 2, 3 или 4 строки (по умолчанию 3).</string>
+    <string name="fork_cl_v18" translatable="false">fork.18</string>
+    <string name="fork_cl_v18_date" translatable="false">2026-07-17</string>
+    <string name="fork_cl_v18_text">• Настройка числа строк названия эпизода (2–4, по умолчанию 3)</string>
     <string name="fork_cl_v17" translatable="false">fork.17</string>
     <string name="fork_cl_v17_date" translatable="false">2026-07-15</string>
     <string name="fork_cl_v17_text">• Кнопка «Только загруженные» переехала в шапку канала — рядом с фильтром и настройками</string>

@@ -26,6 +26,13 @@
             android:key="prefForkSettingsExport"
             android:title="@string/fork_settings_export_label"
             android:summary="@string/fork_settings_export_summary"/>
+    <ListPreference
+            android:key="prefForkEpisodeTitleLines"
+            android:title="@string/fork_title_lines_label"
+            android:summary="@string/fork_title_lines_summary"
+            android:entries="@array/fork_title_lines_options"
+            android:entryValues="@array/fork_title_lines_values"
+            android:defaultValue="3"/>
     <Preference
             android:key="prefForkSettingsImport"
             android:title="@string/fork_settings_import_label"
