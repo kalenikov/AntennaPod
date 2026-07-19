@@ -577,6 +577,15 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         viewBinding.header.butSubscribe.setVisibility(isNotSubscribed ? View.VISIBLE : View.GONE);
         viewBinding.header.butRestore.setVisibility(isArchived ? View.VISIBLE : View.GONE);
 
+        String pinchflatUrl = ForkPinchflat.sourcePageUrl(feed.getDownloadUrl());
+        if (pinchflatUrl != null && showSettingsButtons) {
+            viewBinding.header.butPinchflat.setVisibility(View.VISIBLE);
+            viewBinding.header.butPinchflat.setOnClickListener(v ->
+                    IntentUtils.openInBrowser(getContext(), pinchflatUrl));
+        } else {
+            viewBinding.header.butPinchflat.setVisibility(View.GONE);
+        }
+
         if (isNotSubscribed && feed.getLastRefreshAttempt() < System.currentTimeMillis() - 1000L * 3600 * 24) {
             FeedUpdateManager.getInstance().runOnce(getContext(), feed, true);
         }

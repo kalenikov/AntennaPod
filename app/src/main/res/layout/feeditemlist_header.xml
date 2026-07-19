@@ -93,6 +93,18 @@
                 app:srcCompat="@drawable/ic_download_white"
                 tools:visibility="visible" />
 
+            <ImageButton
+                android:id="@+id/butPinchflat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/fork_pinchflat_label"
+                android:scaleType="fitXY"
+                android:padding="12dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_pinchflat_white"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
         <ImageView
