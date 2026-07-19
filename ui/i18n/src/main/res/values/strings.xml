@@ -768,6 +768,9 @@
     <string name="fork_feat_v19">fork.19</string>
     <string name="fork_feat_pinchflat_title">Интеграция с Pinchflat</string>
     <string name="fork_feat_pinchflat_desc">Кнопка в шапке канала-источника открывает страницу этого источника в Pinchflat, а пункт «Открыть Pinchflat» в меню подписок — список источников. Адрес берётся из URL самих подписок, не захардкожен.</string>
+    <string name="fork_cl_v20" translatable="false">fork.20</string>
+    <string name="fork_cl_v20_date" translatable="false">2026-07-19</string>
+    <string name="fork_cl_v20_text">• Исправлено: кнопки Pinchflat не появлялись (URL фида с «.xml» не распознавался)</string>
     <string name="fork_cl_v19" translatable="false">fork.19</string>
     <string name="fork_cl_v19_date" translatable="false">2026-07-19</string>
     <string name="fork_cl_v19_text">• Кнопка «Открыть в Pinchflat» в шапке канала-источника\n• Пункт «Открыть Pinchflat» в меню подписок (список источников)</string>

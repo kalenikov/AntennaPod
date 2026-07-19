@@ -21,6 +21,10 @@ public class ForkPinchflatUrlTest {
 
     @Test
     public void rewritesPinchflatFeedUrl() {
+        // real-world form as stored via oPodSync: .../feed.xml
+        assertEquals("http://192.168.1.87:8945/sources/uuid/" + UUID,
+                ForkPinchflat.sourcePageUrl("http://192.168.1.87:8945/sources/" + UUID + "/feed.xml"));
+        // also tolerate the extension-less form
         assertEquals("http://192.168.1.87:8945/sources/uuid/" + UUID,
                 ForkPinchflat.sourcePageUrl("http://192.168.1.87:8945/sources/" + UUID + "/feed"));
     }
@@ -36,7 +40,7 @@ public class ForkPinchflatUrlTest {
     @Test
     public void originOfReturnsSchemeAndHost() {
         assertEquals("http://192.168.1.87:8945",
-                ForkPinchflat.originOf("http://192.168.1.87:8945/sources/" + UUID + "/feed"));
+                ForkPinchflat.originOf("http://192.168.1.87:8945/sources/" + UUID + "/feed.xml"));
         assertEquals("https://pf.example.com",
                 ForkPinchflat.originOf("https://pf.example.com/sources/" + UUID + "/feed?fresh=1"));
         assertNull(ForkPinchflat.originOf("https://www.youtube.com/@PolinaPars"));

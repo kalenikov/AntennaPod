@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public final class ForkPinchflat {
 
     private static final Pattern PINCHFLAT_FEED = Pattern.compile(
-            "^(https?://[^/]+)/sources/([0-9a-fA-F-]{36})/feed/?(\\?.*)?$");
+            "^(https?://[^/]+)/sources/([0-9a-fA-F-]{36})/feed(\\.xml)?/?(\\?.*)?$");
 
     private ForkPinchflat() {
     }
