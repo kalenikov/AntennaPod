@@ -34,6 +34,16 @@ public class ForkPinchflatUrlTest {
     }
 
     @Test
+    public void originOfReturnsSchemeAndHost() {
+        assertEquals("http://192.168.1.87:8945",
+                ForkPinchflat.originOf("http://192.168.1.87:8945/sources/" + UUID + "/feed"));
+        assertEquals("https://pf.example.com",
+                ForkPinchflat.originOf("https://pf.example.com/sources/" + UUID + "/feed?fresh=1"));
+        assertNull(ForkPinchflat.originOf("https://www.youtube.com/@PolinaPars"));
+        assertNull(ForkPinchflat.originOf(null));
+    }
+
+    @Test
     public void returnsNullForNonPinchflatUrls() {
         assertNull(ForkPinchflat.sourcePageUrl(null));
         assertNull(ForkPinchflat.sourcePageUrl(""));

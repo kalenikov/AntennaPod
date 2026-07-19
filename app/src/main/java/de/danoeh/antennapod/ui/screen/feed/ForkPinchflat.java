@@ -35,4 +35,18 @@ public final class ForkPinchflat {
         }
         return matcher.group(1) + "/sources/uuid/" + matcher.group(2);
     }
+
+    /**
+     * @param downloadUrl the feed's download URL
+     * @return the Pinchflat origin ({@code scheme://host[:port]}) if this is a Pinchflat
+     *     feed URL, or {@code null} otherwise. Used to derive the Pinchflat base address
+     *     for the global "open Pinchflat" action without hardcoding a host.
+     */
+    public static String originOf(String downloadUrl) {
+        if (downloadUrl == null) {
+            return null;
+        }
+        Matcher matcher = PINCHFLAT_FEED.matcher(downloadUrl.trim());
+        return matcher.matches() ? matcher.group(1) : null;
+    }
 }

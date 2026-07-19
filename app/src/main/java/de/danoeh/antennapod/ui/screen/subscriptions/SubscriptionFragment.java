@@ -42,7 +42,9 @@ import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.MenuItemUtils;
+import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
+import de.danoeh.antennapod.ui.screen.feed.ForkPinchflat;
 import de.danoeh.antennapod.ui.screen.SearchFragment;
 import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
 import de.danoeh.antennapod.ui.view.EmptyViewHandler;
@@ -254,6 +256,10 @@ public class SubscriptionFragment extends Fragment
         toolbar.getMenu().findItem(R.id.pref_show_subscription_title).setVisible(columns > 1);
         toolbar.getMenu().findItem(R.id.pref_show_subscription_title)
                 .setChecked(UserPreferences.shouldShowSubscriptionTitle());
+        MenuItem openPinchflat = toolbar.getMenu().findItem(R.id.subscriptions_open_pinchflat);
+        if (openPinchflat != null) {
+            openPinchflat.setVisible(pinchflatOrigin() != null);
+        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -331,8 +337,32 @@ public class SubscriptionFragment extends Fragment
             Fragment fragment = SubscriptionFragment.newInstance(Feed.STATE_ARCHIVED);
             ((MainActivity) getActivity()).loadChildFragment(fragment);
             return true;
+        } else if (itemId == R.id.subscriptions_open_pinchflat) {
+            String origin = pinchflatOrigin();
+            if (origin != null) {
+                IntentUtils.openInBrowser(requireContext(), origin + "/sources");
+            }
+            return true;
         }
         return false;
+    }
+
+    /**
+     * Derives the Pinchflat base address ({@code scheme://host[:port]}) from the first
+     * Pinchflat subscription in the current list, or {@code null} if there is none.
+     * Avoids hardcoding the Pinchflat host — it is read from an existing feed's URL.
+     */
+    private String pinchflatOrigin() {
+        if (feeds == null) {
+            return null;
+        }
+        for (Feed feed : feeds) {
+            String origin = ForkPinchflat.originOf(feed.getDownloadUrl());
+            if (origin != null) {
+                return origin;
+            }
+        }
+        return null;
     }
 
     private void setColumnNumber(int columns) {
@@ -442,6 +472,7 @@ public class SubscriptionFragment extends Fragment
                         feeds = openedFolderFeeds;
                         progressBar.setVisibility(View.GONE);
                         subscriptionAdapter.setItems(feeds, result.first.feedCounters);
+                        refreshToolbarState();
                         if (firstLoaded) {
                             restoreScrollPosition(scrollPosition);
                         }

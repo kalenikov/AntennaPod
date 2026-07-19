@@ -764,12 +764,13 @@
     <string name="fork_feat_titlelines_title">Число строк названия эпизода</string>
     <string name="fork_feat_titlelines_desc">Настройка в разделе KalenikovPod: название эпизода в списках занимает 2, 3 или 4 строки (по умолчанию 3).</string>
     <string name="fork_pinchflat_label">Открыть в Pinchflat</string>
+    <string name="fork_open_pinchflat">Открыть Pinchflat</string>
     <string name="fork_feat_v19">fork.19</string>
-    <string name="fork_feat_pinchflat_title">Кнопка «Открыть в Pinchflat»</string>
-    <string name="fork_feat_pinchflat_desc">В шапке канала-источника Pinchflat появляется кнопка, открывающая страницу этого источника в веб-интерфейсе Pinchflat.</string>
+    <string name="fork_feat_pinchflat_title">Интеграция с Pinchflat</string>
+    <string name="fork_feat_pinchflat_desc">Кнопка в шапке канала-источника открывает страницу этого источника в Pinchflat, а пункт «Открыть Pinchflat» в меню подписок — список источников. Адрес берётся из URL самих подписок, не захардкожен.</string>
     <string name="fork_cl_v19" translatable="false">fork.19</string>
     <string name="fork_cl_v19_date" translatable="false">2026-07-19</string>
-    <string name="fork_cl_v19_text">• Кнопка «Открыть в Pinchflat» в шапке канала-источника Pinchflat</string>
+    <string name="fork_cl_v19_text">• Кнопка «Открыть в Pinchflat» в шапке канала-источника\n• Пункт «Открыть Pinchflat» в меню подписок (список источников)</string>
     <string name="fork_cl_v18" translatable="false">fork.18</string>
     <string name="fork_cl_v18_date" translatable="false">2026-07-17</string>
     <string name="fork_cl_v18_text">• Настройка числа строк названия эпизода (2–4, по умолчанию 3)</string>

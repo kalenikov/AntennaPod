@@ -90,4 +90,9 @@
         android:id="@+id/show_archive"
         android:title="@string/archive_feed_label_noun"
         custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/subscriptions_open_pinchflat"
+        android:title="@string/fork_open_pinchflat"
+        custom:showAsAction="never" />
 </menu>
