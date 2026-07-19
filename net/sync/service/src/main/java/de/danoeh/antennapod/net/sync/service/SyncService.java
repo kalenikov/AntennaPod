@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -146,7 +145,7 @@ public class SyncService extends Worker {
     private void syncSubscriptions(ISyncService syncServiceImpl) throws SyncServiceException {
         final long lastSync = SynchronizationSettings.getLastSubscriptionSynchronizationTimestamp();
         EventBus.getDefault().postSticky(new SyncServiceEvent(R.string.sync_status_subscriptions));
-        final List<String> localSubscriptions = DBReader.getFeedListDownloadUrls();
+        final List<String> localSubscriptions = DBReader.getFeedListDownloadUrls(true);
         SubscriptionChanges subscriptionChanges = syncServiceImpl.getSubscriptionChanges(lastSync);
         long newTimeStamp = subscriptionChanges.getTimestamp();
 
@@ -166,6 +165,12 @@ public class SyncService extends Worker {
             if (redirectedUrl != null
                     && (UrlChecker.containsUrl(localSubscriptions, redirectedUrl)
                         || queuedRemovedFeeds.contains(redirectedUrl))) {
+                continue;
+            }
+            // If the creator redirected their feed incorrectly, we still try to avoid duplicated subscriptions
+            String finalUrl = RedirectChecker.getFinalUrl(downloadUrl);
+            if (UrlChecker.containsUrl(localSubscriptions, finalUrl)
+                    || queuedRemovedFeeds.contains(finalUrl)) {
                 continue;
             }
 
@@ -375,8 +380,8 @@ public class SyncService extends Worker {
         Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(
                 getApplicationContext().getPackageName());
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                R.id.pending_intent_sync_error, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                        | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
+                R.id.pending_intent_sync_error, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         Notification notification = new NotificationCompat.Builder(getApplicationContext(),
                 NotificationUtils.CHANNEL_ID_SYNC_ERROR)
                 .setContentTitle(getApplicationContext().getString(R.string.gpodnetsync_error_title))

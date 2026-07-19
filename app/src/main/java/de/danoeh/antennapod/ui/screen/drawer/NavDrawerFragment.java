@@ -59,9 +59,9 @@ import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionsFilterDialog;
+import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.event.QueueEvent;
-import de.danoeh.antennapod.event.UnreadItemsUpdateEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
@@ -168,6 +168,7 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
             menu.setHeaderTitle(contextPressedItem.asFeed().getTitle());
             inflater.inflate(R.menu.nav_feed_context, menu);
             // episodes are not loaded, so we cannot check if the podcast has new or unplayed ones!
+            FeedMenuHandler.onPrepareMenu(menu, Collections.singletonList(contextPressedItem.asFeed()));
         } else if (FeedPreferences.TAG_UNTAGGED.equals(contextPressedItem.asTag().getTitle())) {
             return;
         } else {
@@ -193,11 +194,11 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
 
     private boolean onFeedContextMenuClicked(Feed feed, MenuItem item) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.remove_archive_feed) {
+        if (itemId == R.id.remove_archive_feed || itemId == R.id.remove_restore_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
             return true;
         }
-        if (FeedMenuHandler.onMenuItemClicked(this, itemId, feed, null)) {
+        if (FeedMenuHandler.onMenuItemClicked(this, itemId, feed)) {
             return true;
         }
         return super.onContextItemSelected(item);
@@ -250,10 +251,11 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUnreadItemsChanged(UnreadItemsUpdateEvent event) {
-        loadData();
+    public void onUnreadItemsChanged(FeedItemEvent event) {
+        if (event.unreadStatusChanged) {
+            loadData();
+        }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFeedListChanged(FeedListUpdateEvent event) {
@@ -476,7 +478,7 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
     }
 
     private int feedCounter(Feed feed, Map<Long, Integer> feedCounters) {
-        if (navDrawerData == null || feedCounters == null) {
+        if (feedCounters == null) {
             return 0;
         }
         return feedCounters.containsKey(feed.getId()) ? feedCounters.get(feed.getId()) : 0;

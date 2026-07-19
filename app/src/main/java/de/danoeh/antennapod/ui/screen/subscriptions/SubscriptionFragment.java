@@ -29,11 +29,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
-import de.danoeh.antennapod.event.UnreadItemsUpdateEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
+import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
@@ -46,7 +47,7 @@ import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.feed.ForkPinchflat;
 import de.danoeh.antennapod.ui.screen.SearchFragment;
-import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
+
 import de.danoeh.antennapod.ui.view.EmptyViewHandler;
 import de.danoeh.antennapod.ui.view.FloatingSelectMenu;
 import de.danoeh.antennapod.ui.view.ItemOffsetDecoration;
@@ -164,9 +165,10 @@ public class SubscriptionFragment extends Fragment
         subscriptionRecycler.addOnScrollListener(new LiftOnScrollListener(collapsingContainer));
         subscriptionAdapter = new SubscriptionsRecyclerAdapter((MainActivity) getActivity()) {
             @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                super.onCreateContextMenu(menu, v, menuInfo);
-                MenuItemUtils.setOnClickListeners(menu, SubscriptionFragment.this::onContextItemSelected);
+            protected void onSelectedItemsUpdated() {
+                super.onSelectedItemsUpdated();
+                FeedMenuHandler.onPrepareMenu(floatingSelectMenu.getMenu(), getSelectedItems());
+                floatingSelectMenu.updateItemVisibility();
             }
         };
         setColumnNumber(prefs.getInt(PREF_NUM_COLUMNS, getDefaultNumOfColumns()));
@@ -213,8 +215,12 @@ public class SubscriptionFragment extends Fragment
             subscriptionAddButton.setVisibility(View.GONE);
         }
         floatingSelectMenu.setOnMenuItemClickListener(menuItem -> {
-            new FeedMultiSelectActionHandler(getActivity(), subscriptionAdapter.getSelectedItems())
+            List<Feed> selection = subscriptionAdapter.getSelectedItems();
+            new FeedMultiSelectActionHandler(getActivity(), selection)
                     .handleAction(menuItem.getItemId());
+            if (selection.size() <= 1) {
+                subscriptionAdapter.endSelectMode();
+            }
             return true;
         });
 
@@ -321,13 +327,11 @@ public class SubscriptionFragment extends Fragment
             return true;
         } else if (itemId == R.id.action_search) {
             if (stateToShow == Feed.STATE_ARCHIVED) {
-                ((MainActivity) getActivity()).loadChildFragment(SearchFragment.newInstanceArchive());
+                ((MainActivity) getActivity()).loadChildFragment(
+                        SearchFragment.newInstance(new FeedItemFilter(FeedItemFilter.INCLUDE_ARCHIVED)));
             } else {
                 ((MainActivity) getActivity()).loadChildFragment(SearchFragment.newInstance());
             }
-            return true;
-        } else if (itemId == R.id.action_statistics) {
-            ((MainActivity) getActivity()).loadChildFragment(new StatisticsFragment());
             return true;
         } else if (itemId == R.id.pref_show_subscription_title) {
             item.setChecked(!item.isChecked());
@@ -671,8 +675,10 @@ public class SubscriptionFragment extends Fragment
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUnreadItemsChanged(UnreadItemsUpdateEvent event) {
-        loadSubscriptionsAndTags();
+    public void onUnreadItemsChanged(FeedItemEvent event) {
+        if (event.unreadStatusChanged) {
+            loadSubscriptionsAndTags();
+        }
     }
 
     private void setCollapsingToolbarFlags(int flags) {

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,20 +33,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import com.bumptech.glide.Glide;
+import androidx.media3.session.MediaController;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.EpisodeDownloadEvent;
 import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.event.MessageEvent;
+import de.danoeh.antennapod.event.StreamingConfirmationEvent;
 import de.danoeh.antennapod.model.download.DownloadStatus;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
+import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.cast.CastEnabledActivity;
-import de.danoeh.antennapod.playback.service.PlaybackServiceInterface;
+import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenanceWorker;
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
@@ -55,11 +58,12 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.TransitionEffect;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
-import de.danoeh.antennapod.ui.common.IntentUtils;
+import de.danoeh.antennapod.ui.common.NavigationToolbarActivity;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.discovery.DiscoveryFragment;
 import de.danoeh.antennapod.ui.screen.preferences.ForkChangelog;
+import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.InboxFragment;
@@ -70,6 +74,7 @@ import de.danoeh.antennapod.ui.screen.download.DownloadLogFragment;
 import de.danoeh.antennapod.ui.screen.drawer.BottomNavigation;
 import de.danoeh.antennapod.ui.screen.drawer.NavDrawerFragment;
 import de.danoeh.antennapod.ui.screen.drawer.NavigationNames;
+import de.danoeh.antennapod.ui.screen.episode.ItemPagerFragment;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.screen.home.HomeFragment;
 import de.danoeh.antennapod.ui.screen.playback.audio.AudioPlayerFragment;
@@ -77,6 +82,7 @@ import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import de.danoeh.antennapod.ui.screen.rating.RatingDialogManager;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionFragment;
+import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
 import de.danoeh.antennapod.ui.view.BottomSheetBackPressedCallback;
 import de.danoeh.antennapod.ui.view.LockableBottomSheetBehavior;
 import org.apache.commons.lang3.ArrayUtils;
@@ -91,7 +97,7 @@ import java.util.Objects;
 /**
  * The activity that is shown when the user launches the app.
  */
-public class MainActivity extends CastEnabledActivity {
+public class MainActivity extends CastEnabledActivity implements NavigationToolbarActivity {
 
     private static final String TAG = "MainActivity";
     public static final String MAIN_FRAGMENT_TAG = "main";
@@ -154,6 +160,19 @@ public class MainActivity extends CastEnabledActivity {
             setNavDrawerSize();
         }
         openDefaultPageBackPressedCallback = new OpenDefaultPageBackPressedCallback();
+        if (drawerLayout != null) {
+            drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    updateMainBackCallbackEnabledState();
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    updateMainBackCallbackEnabledState();
+                }
+            });
+        }
 
         // Consume navigation bar insets - we apply them in setPlayerVisible()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_view), (v, insets) -> {
@@ -165,6 +184,7 @@ public class MainActivity extends CastEnabledActivity {
         });
 
         final FragmentManager fm = getSupportFragmentManager();
+        fm.addOnBackStackChangedListener(this::updateMainBackCallbackEnabledState);
         if (fm.findFragmentByTag(MAIN_FRAGMENT_TAG) == null) {
             if (!UserPreferences.DEFAULT_PAGE_REMEMBER.equals(UserPreferences.getDefaultPage())) {
                 loadFragment(UserPreferences.getDefaultPage(), null);
@@ -291,8 +311,10 @@ public class MainActivity extends CastEnabledActivity {
                 onSlide(view, 1.0f);
                 bottomSheetBackPressedCallback.setEnabled(true);
             } else if (state == BottomSheetBehavior.STATE_HIDDEN) {
-                IntentUtils.sendLocalBroadcast(MainActivity.this,
-                        PlaybackServiceInterface.ACTION_SHUTDOWN_PLAYBACK_SERVICE);
+                PlaybackController.bindToMedia3Service(MainActivity.this, controller -> {
+                    controller.clearMediaItems();
+                    controller.stop();
+                });
                 PlaybackPreferences.writeNoMediaPlaying();
                 setPlayerVisible(false);
                 bottomSheetBackPressedCallback.setEnabled(false);
@@ -315,6 +337,7 @@ public class MainActivity extends CastEnabledActivity {
         }
     }
 
+    @Override
     public void setupToolbarToggle(@NonNull MaterialToolbar toolbar, boolean displayUpArrow) {
         if (drawerLayout != null) { // Tablet layout does not have a drawer
             if (drawerToggle != null) {
@@ -426,11 +449,17 @@ public class MainActivity extends CastEnabledActivity {
             case PlaybackHistoryFragment.TAG:
                 fragment = new PlaybackHistoryFragment();
                 break;
+            case FavoritesFragment.TAG:
+                fragment = new FavoritesFragment();
+                break;
             case AddFeedFragment.TAG:
                 fragment = new AddFeedFragment();
                 break;
             case SubscriptionFragment.TAG:
                 fragment = new SubscriptionFragment();
+                break;
+            case StatisticsFragment.TAG:
+                fragment = new StatisticsFragment();
                 break;
             case DiscoveryFragment.TAG:
                 fragment = new DiscoveryFragment();
@@ -484,6 +513,7 @@ public class MainActivity extends CastEnabledActivity {
         if (drawerLayout != null) { // Tablet layout does not have a drawer
             drawerLayout.closeDrawer(navDrawer);
         }
+        updateMainBackCallbackEnabledState();
     }
 
     public void loadChildFragment(Fragment fragment, TransitionEffect transition, String navigationTag) {
@@ -508,6 +538,7 @@ public class MainActivity extends CastEnabledActivity {
                 .add(R.id.main_content_view, fragment, MAIN_FRAGMENT_TAG)
                 .addToBackStack(null)
                 .commit();
+        updateMainBackCallbackEnabledState();
     }
 
     public void loadChildFragment(Fragment fragment, TransitionEffect transition) {
@@ -633,9 +664,19 @@ public class MainActivity extends CastEnabledActivity {
         }
     }
 
+    private void updateMainBackCallbackEnabledState() {
+        String defaultPage = UserPreferences.getDefaultPage();
+        boolean shouldEnable = getSupportFragmentManager().getBackStackEntryCount() > 0
+                || (!NavDrawerFragment.getLastNavFragment(this).equals(defaultPage)
+                        && !UserPreferences.DEFAULT_PAGE_REMEMBER.equals(defaultPage))
+                || (UserPreferences.backButtonOpensDrawer() && drawerLayout != null
+                        && bottomNavigation == null && !drawerLayout.isDrawerOpen(navDrawer));
+        openDefaultPageBackPressedCallback.setEnabled(shouldEnable);
+    }
+
     class OpenDefaultPageBackPressedCallback extends OnBackPressedCallback {
         OpenDefaultPageBackPressedCallback() {
-            super(true);
+            super(false);
         }
 
         @Override
@@ -676,14 +717,39 @@ public class MainActivity extends CastEnabledActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStreamingConfirmation(StreamingConfirmationEvent event) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.stream_label)
+                .setMessage(NetworkUtils.isNetworkRestricted() && NetworkUtils.isVpnOverWifi()
+                        ? getString(R.string.confirm_mobile_streaming_notification_message)
+                                + "\n\n" + getString(R.string.confirm_mobile_download_dialog_message_vpn)
+                        : getString(R.string.confirm_mobile_streaming_notification_message))
+                .setPositiveButton(R.string.confirm_mobile_streaming_button_once, (dialog, which) ->
+                        PlaybackController.bindToMedia3Service(this, MediaController::play))
+                .setNegativeButton(R.string.confirm_mobile_streaming_button_always, (dialog, which) -> {
+                    UserPreferences.setAllowMobileStreaming(true);
+                    PlaybackController.bindToMedia3Service(this, MediaController::play);
+                })
+                .setNeutralButton(R.string.cancel_label, null)
+                .show();
+    }
+
     private void handleNavIntent() {
         Log.d(TAG, "handleNavIntent()");
         Intent intent = getIntent();
-        if (intent.hasExtra(MainActivityStarter.EXTRA_FEED_ID)) {
+        if (intent.hasExtra(MainActivityStarter.EXTRA_EPISODE_ID)) {
+            long episodeId = intent.getLongExtra(MainActivityStarter.EXTRA_EPISODE_ID, 0);
+            if (episodeId <= 0) {
+                return;
+            }
+            loadChildFragment(ItemPagerFragment.newInstance(episodeId));
+            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (intent.hasExtra(MainActivityStarter.EXTRA_FEED_ID)) {
             long feedId = intent.getLongExtra(MainActivityStarter.EXTRA_FEED_ID, 0);
             Bundle args = intent.getBundleExtra(MainActivityStarter.EXTRA_FRAGMENT_ARGS);
             if (feedId > 0) {
-                if (intent.getBooleanExtra(MainActivityStarter.EXTRA_CLEAR_BACK_STACK, false)) {
+                if (intent.getBooleanExtra(MainActivityStarter.EXTRA_CLEAR_BACK_STACK, true)) {
                     loadFeedFragmentById(feedId, args);
                 } else {
                     loadChildFragment(FeedItemlistFragment.newInstance(feedId));
@@ -694,7 +760,7 @@ public class MainActivity extends CastEnabledActivity {
             String tag = intent.getStringExtra(MainActivityStarter.EXTRA_FRAGMENT_TAG);
             Bundle args = intent.getBundleExtra(MainActivityStarter.EXTRA_FRAGMENT_ARGS);
             if (tag != null) {
-                if (intent.getBooleanExtra(MainActivityStarter.EXTRA_CLEAR_BACK_STACK, false)) {
+                if (intent.getBooleanExtra(MainActivityStarter.EXTRA_CLEAR_BACK_STACK, true)) {
                     loadFragment(tag, null);
                 } else {
                     loadChildFragment(createFragmentInstance(tag, args), TransitionEffect.NONE, tag);
@@ -719,6 +785,7 @@ public class MainActivity extends CastEnabledActivity {
         }
         // to avoid handling the intent twice when the configuration changes
         setIntent(new Intent(MainActivity.this, MainActivity.class));
+        updateMainBackCallbackEnabledState();
     }
 
     @Override
@@ -770,6 +837,9 @@ public class MainActivity extends CastEnabledActivity {
                     case "SUBSCRIPTIONS":
                         loadFragment(SubscriptionFragment.TAG, null);
                         break;
+                    case "STATISTICS":
+                        loadFragment(StatisticsFragment.TAG, null);
+                        break;
                     default:
                         EventBus.getDefault().post(new MessageEvent(getString(R.string.app_action_not_found, feature)));
                         return;
@@ -817,12 +887,9 @@ public class MainActivity extends CastEnabledActivity {
                         AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
                 return true;
             case KeyEvent.KEYCODE_M:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
-                            AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
-                    return true;
-                }
-                break;
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                return true;
             default:
                 break;
         }

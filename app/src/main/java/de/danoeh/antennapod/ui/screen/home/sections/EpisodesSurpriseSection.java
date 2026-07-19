@@ -81,6 +81,14 @@ public class EpisodesSurpriseSection extends HomeSection {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (disposable != null) {
+            disposable.dispose();
+        }
+    }
+
+    @Override
     protected void handleMoreClick() {
         ((MainActivity) requireActivity()).loadChildFragment(new AllEpisodesFragment());
     }
@@ -92,7 +100,7 @@ public class EpisodesSurpriseSection extends HomeSection {
 
     @Override
     protected String getMoreLinkTitle() {
-        return getString(R.string.episodes_label_more);
+        return getString(R.string.episodes_label);
     }
 
 

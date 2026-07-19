@@ -83,6 +83,8 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             prefFragment = new SwipePreferencesFragment();
         } else if (screen == R.xml.preferences_auto_deletion) {
             prefFragment = new AutomaticDeletionPreferencesFragment();
+        } else if (screen == R.xml.preferences_parental_control) {
+            prefFragment = new ParentalControlPreferencesFragment();
         }
         return prefFragment;
     }
@@ -110,6 +112,8 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             return R.string.swipeactions_label;
         } else if (preferences == R.xml.preferences_auto_deletion) {
             return R.string.pref_auto_delete_title;
+        } else if (preferences == R.xml.preferences_parental_control) {
+            return R.string.pref_parental_control_title;
         }
         return R.string.settings_label;
     }

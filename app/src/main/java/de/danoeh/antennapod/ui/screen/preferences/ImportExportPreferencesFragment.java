@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -220,9 +221,14 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     }
 
     void showExportSuccessSnackbar(Uri uri, String mimeType) {
-        Snackbar.make(getView(), R.string.export_success_title, Snackbar.LENGTH_LONG)
+        View view = getView();
+        if (view == null) {
+            return;
+        }
+
+        Snackbar.make(view, R.string.export_success_title, Snackbar.LENGTH_LONG)
                 .setAction(R.string.share_label, v ->
-                        new ShareCompat.IntentBuilder(getContext())
+                        new ShareCompat.IntentBuilder(v.getContext())
                                 .setType(mimeType)
                                 .addStream(uri)
                                 .setChooserTitle(R.string.share_label)
@@ -239,6 +245,15 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
         alert.show();
     }
 
+    private void showImportErrorDialog(final Throwable error) {
+        progressDialog.dismiss();
+        final MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(getContext());
+        alert.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+        alert.setTitle(R.string.import_error_label);
+        alert.setMessage(error.getMessage());
+        alert.show();
+    }
+
     private void restoreDatabaseResult(final ActivityResult result) {
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
             return;
@@ -251,7 +266,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
                 .subscribe(() -> {
                     showDatabaseImportSuccessDialog();
                     progressDialog.dismiss();
-                }, this::showExportErrorDialog);
+                }, this::showImportErrorDialog);
     }
 
     private void backupDatabaseResult(final Uri uri) {

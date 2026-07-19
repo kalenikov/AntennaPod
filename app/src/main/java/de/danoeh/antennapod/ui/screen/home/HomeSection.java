@@ -41,8 +41,11 @@ public abstract class HomeSection extends Fragment implements View.OnCreateConte
         }
         // Dummies are necessary to ensure height, but do not animate them
         viewBinding.recyclerView.setItemAnimator(null);
-        viewBinding.recyclerView.postDelayed(
-                () -> viewBinding.recyclerView.setItemAnimator(new DefaultItemAnimator()), 500);
+        viewBinding.recyclerView.postDelayed(() -> {
+            if (viewBinding != null) {
+                viewBinding.recyclerView.setItemAnimator(new DefaultItemAnimator());
+            }
+        }, 500);
         return viewBinding.getRoot();
     }
 
@@ -57,7 +60,7 @@ public abstract class HomeSection extends Fragment implements View.OnCreateConte
             HorizontalFeedListAdapter adapter = (HorizontalFeedListAdapter) viewBinding.recyclerView.getAdapter();
             Feed selectedFeed = adapter.getLongPressedItem();
             return selectedFeed != null
-                    && FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedFeed, () -> { });
+                    && FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedFeed);
         }
         FeedItem longPressedItem;
         if (viewBinding.recyclerView.getAdapter() instanceof EpisodeItemListAdapter) {
@@ -89,6 +92,12 @@ public abstract class HomeSection extends Fragment implements View.OnCreateConte
         super.onStop();
         EventBus.getDefault().unregister(this);
         unregisterForContextMenu(viewBinding.recyclerView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewBinding = null;
     }
 
     protected abstract String getSectionTitle();

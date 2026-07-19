@@ -74,14 +74,15 @@ public final class DBReader {
     }
 
     /**
-     * Returns a list with the download URLs of all feeds.
+     * Returns a list with the download URLs of feeds.
      *
-     * @return A list of Strings with the download URLs of all feeds.
+     * @param subscribedOnly If true, only return feeds with {@link Feed#STATE_SUBSCRIBED}.
+     * @return A list of Strings with the download URLs of matching feeds.
      */
-    public static synchronized List<String> getFeedListDownloadUrls() {
+    public static synchronized List<String> getFeedListDownloadUrls(boolean subscribedOnly) {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
-        try (Cursor cursor = adapter.getFeedCursorDownloadUrls()) {
+        try (Cursor cursor = adapter.getFeedCursorDownloadUrls(subscribedOnly)) {
             List<String> result = new ArrayList<>(cursor.getCount());
             while (cursor.moveToNext()) {
                 String url = cursor.getString(1);
@@ -337,7 +338,7 @@ public final class DBReader {
                 feed = cursor.getFeed();
                 FeedItemFilter filter = (filtered && feed.getItemFilter() != null)
                         ? feed.getItemFilter() : FeedItemFilter.unfiltered();
-                filter = new FeedItemFilter(filter, FeedItemFilter.INCLUDE_NOT_SUBSCRIBED);
+                filter = new FeedItemFilter(filter, FeedItemFilter.INCLUDE_ALL_FEED_STATES);
                 List<FeedItem> items = getFeedItemList(feed, filter, feed.getSortOrder(), offset, limit);
                 for (FeedItem item : items) {
                     item.setFeed(feed);
@@ -791,10 +792,11 @@ public final class DBReader {
         return tagsSorted;
     }
 
-    public static synchronized List<FeedItem> searchFeedItems(final long feedId, final String query, int state) {
+    public static synchronized List<FeedItem> searchFeedItems(final long feedId, final String query,
+                                                  FeedItemFilter filter) {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
-        try (FeedItemCursor searchResult = new FeedItemCursor(adapter.searchItems(feedId, query, state))) {
+        try (FeedItemCursor searchResult = new FeedItemCursor(adapter.searchItems(feedId, query, filter))) {
             List<FeedItem> items = extractItemlistFromCursor(searchResult);
             loadFeedDataOfFeedItemList(items);
             return items;
@@ -803,10 +805,10 @@ public final class DBReader {
         }
     }
 
-    public static synchronized List<Feed> searchFeeds(final String query, int state) {
+    public static synchronized List<Feed> searchFeeds(final String query, FeedItemFilter filter) {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
-        try (FeedCursor cursor = new FeedCursor(adapter.searchFeeds(query, state))) {
+        try (FeedCursor cursor = new FeedCursor(adapter.searchFeeds(query, filter))) {
             List<Feed> items = new ArrayList<>();
             while (cursor.moveToNext()) {
                 items.add(cursor.getFeed());
