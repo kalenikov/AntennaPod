@@ -33,6 +33,11 @@
             android:entries="@array/fork_title_lines_options"
             android:entryValues="@array/fork_title_lines_values"
             android:defaultValue="3"/>
+    <SwitchPreferenceCompat
+            android:key="prefForkVideoNoRotate"
+            android:title="@string/fork_video_no_rotate_label"
+            android:summary="@string/fork_video_no_rotate_summary"
+            android:defaultValue="true"/>
     <Preference
             android:key="prefForkSettingsImport"
             android:title="@string/fork_settings_import_label"

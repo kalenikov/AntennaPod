@@ -36,6 +36,7 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_filtertoggle_title, R.string.fork_feat_filtertoggle_desc, R.string.fork_feat_v12},
             {R.string.fork_feat_titlelines_title, R.string.fork_feat_titlelines_desc, R.string.fork_feat_v18},
             {R.string.fork_feat_pinchflat_title, R.string.fork_feat_pinchflat_desc, R.string.fork_feat_v19},
+            {R.string.fork_feat_videorotate_title, R.string.fork_feat_videorotate_desc, R.string.fork_feat_v22},
     };
 
     @Override

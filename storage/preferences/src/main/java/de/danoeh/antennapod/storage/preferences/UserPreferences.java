@@ -52,6 +52,7 @@ public abstract class UserPreferences {
     public static final String PREF_DRAWER_FEED_ORDER = "prefDrawerFeedOrder";
     public static final String PREF_DRAWER_FEED_COUNTER = "prefDrawerFeedIndicator";
     public static final String PREF_FORK_EPISODE_TITLE_LINES = "prefForkEpisodeTitleLines";
+    public static final String PREF_FORK_VIDEO_NO_ROTATE = "prefForkVideoNoRotate";
     public static final String PREF_EXPANDED_NOTIFICATION = "prefExpandNotify";
     public static final String PREF_USE_EPISODE_COVER = "prefEpisodeCover";
     public static final String PREF_SHOW_TIME_LEFT = "showTimeLeft";
@@ -315,6 +316,11 @@ public abstract class UserPreferences {
         } catch (NumberFormatException e) {
             return 3;
         }
+    }
+
+    /** Fork feature: when true, the video player does not force landscape (plays in current orientation). */
+    public static boolean getForkVideoNoRotate() {
+        return prefs.getBoolean(PREF_FORK_VIDEO_NO_ROTATE, true);
     }
 
     /**

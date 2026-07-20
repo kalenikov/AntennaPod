@@ -780,6 +780,8 @@
     <string name="fork_filter_downloaded_off">Фильтр по загруженным снят</string>
     <string name="fork_title_lines_label">Строк в названии эпизода</string>
     <string name="fork_title_lines_summary">Сколько строк занимает название в списках эпизодов</string>
+    <string name="fork_video_no_rotate_label">Не поворачивать экран для видео</string>
+    <string name="fork_video_no_rotate_summary">Видео играет в текущей ориентации (портрет), не переворачивая экран в альбомную</string>
     <string name="fork_title_lines_2">2 строки</string>
     <string name="fork_title_lines_3">3 строки</string>
     <string name="fork_title_lines_4">4 строки</string>
@@ -791,6 +793,12 @@
     <string name="fork_feat_v19">fork.19</string>
     <string name="fork_feat_pinchflat_title">Интеграция с Pinchflat</string>
     <string name="fork_feat_pinchflat_desc">Кнопка в шапке канала-источника открывает страницу этого источника в Pinchflat, а пункт «Открыть Pinchflat» в меню подписок — список источников. Адрес берётся из URL самих подписок, не захардкожен.</string>
+    <string name="fork_feat_v22">fork.22</string>
+    <string name="fork_feat_videorotate_title">Видео без поворота экрана</string>
+    <string name="fork_feat_videorotate_desc">Тумблер в разделе KalenikovPod: видео играет в текущей ориентации (портрет), не переворачивая экран в альбомную.</string>
+    <string name="fork_cl_v22" translatable="false">fork.22</string>
+    <string name="fork_cl_v22_date" translatable="false">2026-07-20</string>
+    <string name="fork_cl_v22_text">• Видео без принудительного поворота экрана — тумблер в разделе KalenikovPod (по умолчанию видео играет в портрете)</string>
     <string name="fork_cl_v21" translatable="false">fork.21</string>
     <string name="fork_cl_v21_date" translatable="false">2026-07-19</string>
     <string name="fork_cl_v21_text">• Обновление на свежую базу AntennaPod 3.12.0-beta4</string>

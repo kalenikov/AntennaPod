@@ -3,6 +3,7 @@ package de.danoeh.antennapod.ui.screen.playback.video;
 import android.app.PictureInPictureParams;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +31,7 @@ import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.episodeslist.FeedItemMenuHandler;
@@ -67,6 +69,11 @@ public class Media3VideoPlayerActivity extends AppCompatActivity implements Tool
         supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setTheme(R.style.Theme_AntennaPod_Dark);
         getSupportActionBar().hide();
+        // Fork: unless disabled, keep the current screen orientation instead of the manifest's
+        // forced sensorLandscape, so video can play in portrait.
+        if (UserPreferences.getForkVideoNoRotate()) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
         super.onCreate(savedInstanceState);
         viewBinding = Media3VideoPlayerActivityBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
