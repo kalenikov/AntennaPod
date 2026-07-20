@@ -581,7 +581,7 @@ public class SubscriptionFragment extends Fragment
             showCoverCustomizationDialog(selectedFeed);
             return true;
         }
-        return FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedFeed, this::loadSubscriptionsAndTags);
+        return FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), selectedFeed);
     }
 
     private void showCoverCustomizationDialog(Feed feed) {

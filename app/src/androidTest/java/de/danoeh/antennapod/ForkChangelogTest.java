@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -72,16 +71,15 @@ public class ForkChangelogTest {
         Context ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(ctx, PreferenceActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try (ActivityScenario<PreferenceActivity> ignored = ActivityScenario.launch(intent)) {
-            onView(withText(R.string.kalenikovpod_pref)).perform(click());
-            onView(withText(R.string.fork_update_label)).check(matches(isDisplayed()));
-            onView(withText(R.string.view_logs_label)).check(matches(isDisplayed()));
-            onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeUp());
-            onView(withText(R.string.fork_settings_export_label)).check(matches(isDisplayed()));
-            onView(withText(R.string.fork_settings_import_label)).check(matches(isDisplayed()));
-            onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeDown());
-            onView(withText(R.string.fork_changelog_label)).perform(click());
-            onView(withText(R.string.fork_changelog_title)).check(matches(isDisplayed()));
-        }
+        ctx.startActivity(intent);
+        onView(withText(R.string.kalenikovpod_pref)).perform(click());
+        onView(withText(R.string.fork_update_label)).check(matches(isDisplayed()));
+        onView(withText(R.string.view_logs_label)).check(matches(isDisplayed()));
+        onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeUp());
+        onView(withText(R.string.fork_settings_export_label)).check(matches(isDisplayed()));
+        onView(withText(R.string.fork_settings_import_label)).check(matches(isDisplayed()));
+        onView(withId(androidx.preference.R.id.recycler_view)).perform(swipeDown());
+        onView(withText(R.string.fork_changelog_label)).perform(click());
+        onView(withText(R.string.fork_changelog_title)).check(matches(isDisplayed()));
     }
 }

@@ -16,7 +16,7 @@ public class FeedCounterDialog {
     /** Fork feature: sets the counter mode from the toolbar dropdown and refreshes the list. */
     public static void selectCounter(FeedCounter counter) {
         UserPreferences.setFeedCounterSetting(counter);
-        EventBus.getDefault().post(new UnreadItemsUpdateEvent());
+        EventBus.getDefault().post(new FeedItemEvent(Collections.emptyList(), true));
     }
 
     public static void showDialog(Context context) {

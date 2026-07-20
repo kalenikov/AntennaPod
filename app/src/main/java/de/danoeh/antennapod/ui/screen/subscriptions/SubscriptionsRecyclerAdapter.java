@@ -4,7 +4,13 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
+import android.view.ContextMenu;
+import android.view.InputDevice;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,10 +34,13 @@ import java.util.Map;
 /**
  * Adapter for subscriptions
  */
-public class SubscriptionsRecyclerAdapter extends SelectableAdapter<SubscriptionViewHolder> {
+public class SubscriptionsRecyclerAdapter extends SelectableAdapter<SubscriptionViewHolder>
+        implements View.OnCreateContextMenuListener {
     private final WeakReference<MainActivity> mainActivityRef;
     private List<Feed> listItems;
     private Map<Long, Integer> feedCounters;
+    private Feed selectedItem = null;
+    int longPressedPosition = 0; // used to init actionMode
     private int columnCount = 3;
 
     public SubscriptionsRecyclerAdapter(MainActivity mainActivity) {
@@ -48,6 +57,10 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
 
     public Object getItem(int position) {
         return listItems.get(position);
+    }
+
+    public Feed getSelectedItem() {
+        return selectedItem;
     }
 
     @NonNull
@@ -69,6 +82,7 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
     public void onBindViewHolder(@NonNull SubscriptionViewHolder holder, int position) {
         Feed feed = listItems.get(position);
         holder.bind(feed, columnCount, feedCounters.containsKey(feed.getId()) ? feedCounters.get(feed.getId()) : 0);
+        holder.itemView.setOnCreateContextMenuListener(this);
         int cardMargin = 0;
         if (inActionMode()) {
             if (holder.selectIcon != null) {
@@ -112,6 +126,29 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
                 Fragment fragment = FeedItemlistFragment.newInstance(feed.getId());
                 mainActivityRef.get().loadChildFragment(fragment);
             }
+        });
+
+        // Fork: override the upstream long-press (which enters multi-select directly) so a long-press
+        // instead opens a per-feed context menu (pin / customize cover). The context menu keeps a
+        // "Multi-select" entry so batch mode is still reachable. Registered last so it wins.
+        holder.itemView.setOnLongClickListener(v -> {
+            if (!inActionMode()) {
+                longPressedPosition = holder.getBindingAdapterPosition();
+                selectedItem = feed;
+            }
+            return false;
+        });
+        holder.itemView.setOnTouchListener((v, e) -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (e.isFromSource(InputDevice.SOURCE_MOUSE)
+                        && e.getButtonState() == MotionEvent.BUTTON_SECONDARY) {
+                    if (!inActionMode()) {
+                        longPressedPosition = holder.getBindingAdapterPosition();
+                        selectedItem = feed;
+                    }
+                }
+            }
+            return false;
         });
     }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.danoeh.antennapod.event.UnreadItemsUpdateEvent;
+import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import org.greenrobot.eventbus.EventBus;
@@ -35,7 +35,7 @@ public class ForkFilterToggle {
         }
         UserPreferences.setSubscriptionsFilter(
                 new SubscriptionsFilter(properties.toArray(new String[0])));
-        EventBus.getDefault().post(new UnreadItemsUpdateEvent());
+        EventBus.getDefault().post(new FeedListUpdateEvent(new ArrayList<>()));
         return enable;
     }
 }
