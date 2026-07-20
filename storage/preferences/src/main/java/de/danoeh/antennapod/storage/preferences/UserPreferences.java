@@ -51,6 +51,7 @@ public abstract class UserPreferences {
     public static final String PREF_DRAWER_ITEM_ORDER = "prefDrawerItemOrder";
     public static final String PREF_DRAWER_FEED_ORDER = "prefDrawerFeedOrder";
     public static final String PREF_DRAWER_FEED_COUNTER = "prefDrawerFeedIndicator";
+    public static final String PREF_DRAWER_FEED_COUNTER2 = "prefDrawerFeedIndicator2";
     public static final String PREF_FORK_EPISODE_TITLE_LINES = "prefForkEpisodeTitleLines";
     public static final String PREF_FORK_VIDEO_NO_ROTATE = "prefForkVideoNoRotate";
     public static final String PREF_EXPANDED_NOTIFICATION = "prefExpandNotify";
@@ -306,6 +307,16 @@ public abstract class UserPreferences {
 
     public static void setFeedCounterSetting(FeedCounter counter) {
         prefs.edit().putString(PREF_DRAWER_FEED_COUNTER, "" + counter.id).apply();
+    }
+
+    /** Fork feature: second independent subscription counter, shown as "counter1/counter2". */
+    public static FeedCounter getFeedCounterSetting2() {
+        String value = prefs.getString(PREF_DRAWER_FEED_COUNTER2, "" + FeedCounter.SHOW_NONE.id);
+        return FeedCounter.fromOrdinal(Integer.parseInt(value));
+    }
+
+    public static void setFeedCounterSetting2(FeedCounter counter) {
+        prefs.edit().putString(PREF_DRAWER_FEED_COUNTER2, "" + counter.id).apply();
     }
 
     /** Fork feature: how many lines of the episode title are shown in episode lists (2..4). */

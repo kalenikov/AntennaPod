@@ -205,6 +205,7 @@ public class SubscriptionFragment extends Fragment
             toolbar.getMenu().removeItem(R.id.subscriptions_filter);
             toolbar.getMenu().removeItem(R.id.refresh_item);
             toolbar.getMenu().removeItem(R.id.subscriptions_counter);
+            toolbar.getMenu().removeItem(R.id.subscriptions_counter2);
             toolbar.getMenu().removeItem(R.id.subscriptions_filter_counter);
             toolbar.getMenu().removeItem(R.id.show_archive);
             floatingSelectMenu.getMenu().removeItem(R.id.keep_updated);
@@ -300,8 +301,32 @@ public class SubscriptionFragment extends Fragment
         } else if (itemId == R.id.counter_show_downloaded_unplayed) {
             FeedCounterDialog.selectCounter(FeedCounter.SHOW_DOWNLOADED_UNPLAYED);
             return true;
+        } else if (itemId == R.id.counter_show_total) {
+            FeedCounterDialog.selectCounter(FeedCounter.SHOW_TOTAL);
+            return true;
         } else if (itemId == R.id.counter_show_none) {
             FeedCounterDialog.selectCounter(FeedCounter.SHOW_NONE);
+            return true;
+        } else if (itemId == R.id.subscriptions_counter2) {
+            updateCounterMenuCheck2();
+            return true; // opens the second dropdown submenu
+        } else if (itemId == R.id.counter2_show_new) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_NEW);
+            return true;
+        } else if (itemId == R.id.counter2_show_unplayed) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_UNPLAYED);
+            return true;
+        } else if (itemId == R.id.counter2_show_downloaded) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_DOWNLOADED);
+            return true;
+        } else if (itemId == R.id.counter2_show_downloaded_unplayed) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_DOWNLOADED_UNPLAYED);
+            return true;
+        } else if (itemId == R.id.counter2_show_total) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_TOTAL);
+            return true;
+        } else if (itemId == R.id.counter2_show_none) {
+            FeedCounterDialog.selectCounter2(FeedCounter.SHOW_NONE);
             return true;
         } else if (itemId == R.id.subscriptions_filter_counter) {
             boolean active = ForkFilterToggle.toggleCounterFilter();
@@ -442,7 +467,7 @@ public class SubscriptionFragment extends Fragment
                         () -> {
                             NavDrawerData navDrawerData = DBReader.getNavDrawerData(filter,
                                     UserPreferences.getFeedOrder(), UserPreferences.getFeedCounterSetting(),
-                                    stateToShow);
+                                    UserPreferences.getFeedCounterSetting2(), stateToShow);
                             List<NavDrawerData.TagItem> tags = DBReader.getAllTags(stateToShow);
                             return new Pair<>(navDrawerData, tags);
                         })
@@ -475,7 +500,7 @@ public class SubscriptionFragment extends Fragment
                         }
                         feeds = openedFolderFeeds;
                         progressBar.setVisibility(View.GONE);
-                        subscriptionAdapter.setItems(feeds, result.first.feedCounters);
+                        subscriptionAdapter.setItems(feeds, result.first.feedCounters, result.first.feedCounters2);
                         refreshToolbarState();
                         if (firstLoaded) {
                             restoreScrollPosition(scrollPosition);
@@ -533,8 +558,34 @@ public class SubscriptionFragment extends Fragment
             checkedId = R.id.counter_show_downloaded;
         } else if (current == FeedCounter.SHOW_DOWNLOADED_UNPLAYED) {
             checkedId = R.id.counter_show_downloaded_unplayed;
+        } else if (current == FeedCounter.SHOW_TOTAL) {
+            checkedId = R.id.counter_show_total;
         } else {
             checkedId = R.id.counter_show_none;
+        }
+        parent.getSubMenu().findItem(checkedId).setChecked(true);
+    }
+
+    // Fork: second, independent counter submenu.
+    private void updateCounterMenuCheck2() {
+        MenuItem parent = toolbar.getMenu().findItem(R.id.subscriptions_counter2);
+        if (parent == null || parent.getSubMenu() == null) {
+            return;
+        }
+        FeedCounter current = UserPreferences.getFeedCounterSetting2();
+        int checkedId;
+        if (current == FeedCounter.SHOW_NEW) {
+            checkedId = R.id.counter2_show_new;
+        } else if (current == FeedCounter.SHOW_UNPLAYED) {
+            checkedId = R.id.counter2_show_unplayed;
+        } else if (current == FeedCounter.SHOW_DOWNLOADED) {
+            checkedId = R.id.counter2_show_downloaded;
+        } else if (current == FeedCounter.SHOW_DOWNLOADED_UNPLAYED) {
+            checkedId = R.id.counter2_show_downloaded_unplayed;
+        } else if (current == FeedCounter.SHOW_TOTAL) {
+            checkedId = R.id.counter2_show_total;
+        } else {
+            checkedId = R.id.counter2_show_none;
         }
         parent.getSubMenu().findItem(checkedId).setChecked(true);
     }

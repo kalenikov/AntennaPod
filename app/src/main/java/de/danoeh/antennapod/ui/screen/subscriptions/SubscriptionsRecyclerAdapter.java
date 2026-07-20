@@ -39,6 +39,7 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
     private final WeakReference<MainActivity> mainActivityRef;
     private List<Feed> listItems;
     private Map<Long, Integer> feedCounters;
+    private Map<Long, Integer> feedCounters2;
     private Feed selectedItem = null;
     int longPressedPosition = 0; // used to init actionMode
     private int columnCount = 3;
@@ -48,6 +49,7 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
         this.mainActivityRef = new WeakReference<>(mainActivity);
         this.listItems = new ArrayList<>();
         this.feedCounters = Map.of();
+        this.feedCounters2 = Map.of();
         setHasStableIds(true);
     }
 
@@ -81,7 +83,9 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
     @Override
     public void onBindViewHolder(@NonNull SubscriptionViewHolder holder, int position) {
         Feed feed = listItems.get(position);
-        holder.bind(feed, columnCount, feedCounters.containsKey(feed.getId()) ? feedCounters.get(feed.getId()) : 0);
+        holder.bind(feed, columnCount,
+                feedCounters.containsKey(feed.getId()) ? feedCounters.get(feed.getId()) : 0,
+                feedCounters2.containsKey(feed.getId()) ? feedCounters2.get(feed.getId()) : 0);
         holder.itemView.setOnCreateContextMenuListener(this);
         int cardMargin = 0;
         if (inActionMode()) {
@@ -243,9 +247,11 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
         return items;
     }
 
-    public void setItems(List<Feed> listItems, Map<Long, Integer> feedCounters) {
+    public void setItems(List<Feed> listItems, Map<Long, Integer> feedCounters,
+                         Map<Long, Integer> feedCounters2) {
         this.listItems = listItems;
         this.feedCounters = feedCounters;
+        this.feedCounters2 = feedCounters2;
         notifyDataSetChanged();
     }
 

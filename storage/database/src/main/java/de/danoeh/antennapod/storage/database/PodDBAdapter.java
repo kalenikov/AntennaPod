@@ -1332,6 +1332,10 @@ public class PodDBAdapter {
                         + " OR " + KEY_READ + "=" + FeedItem.UNPLAYED + ")"
                         + " AND (" + KEY_DOWNLOAD_DATE + ">0 OR " + localFeedCondition + ")";
                 break;
+            case SHOW_TOTAL:
+                // Fork: count every episode of the feed regardless of state.
+                whereRead = "1=1";
+                break;
             case SHOW_NONE:
                 // deliberate fall-through
             default: // NONE

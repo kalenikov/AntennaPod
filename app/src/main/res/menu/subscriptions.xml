@@ -26,7 +26,38 @@
                         android:id="@+id/counter_show_downloaded_unplayed"
                         android:title="@string/fork_counter_short_downloaded_unplayed"/>
                 <item
+                        android:id="@+id/counter_show_total"
+                        android:title="@string/fork_counter_short_total"/>
+                <item
                         android:id="@+id/counter_show_none"
+                        android:title="@string/fork_counter_short_none"/>
+            </group>
+        </menu>
+    </item>
+    <item
+            android:id="@+id/subscriptions_counter2"
+            android:icon="@drawable/ic_counter"
+            android:title="@string/fork_counter2_title"
+            custom:showAsAction="always">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                        android:id="@+id/counter2_show_new"
+                        android:title="@string/fork_counter_short_inbox"/>
+                <item
+                        android:id="@+id/counter2_show_unplayed"
+                        android:title="@string/fork_counter_short_unplayed"/>
+                <item
+                        android:id="@+id/counter2_show_downloaded"
+                        android:title="@string/fork_counter_short_downloaded"/>
+                <item
+                        android:id="@+id/counter2_show_downloaded_unplayed"
+                        android:title="@string/fork_counter_short_downloaded_unplayed"/>
+                <item
+                        android:id="@+id/counter2_show_total"
+                        android:title="@string/fork_counter_short_total"/>
+                <item
+                        android:id="@+id/counter2_show_none"
                         android:title="@string/fork_counter_short_none"/>
             </group>
         </menu>

@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.storage.preferences.ForkFeedCustomization;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.CoverLoader;
@@ -43,12 +44,32 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         this.mainActivityRef = new WeakReference<>(mainActivity);
     }
 
-    public void bind(Feed feed, int columnCount, int counter) {
+    public void bind(Feed feed, int columnCount, int counter, int counter2) {
         title.setText(feed.getTitle());
         fallbackTitle.setText(feed.getTitle());
         coverImage.setContentDescription(feed.getTitle());
-        if (counter > 0) {
-            count.setText(NumberFormat.getInstance().format(counter));
+
+        // Fork: two independent counters shown in one pill as "counter1/counter2". A disabled
+        // (SHOW_NONE) counter is omitted; a single active counter behaves as before.
+        boolean showFirst = UserPreferences.getFeedCounterSetting() != FeedCounter.SHOW_NONE;
+        boolean showSecond = UserPreferences.getFeedCounterSetting2() != FeedCounter.SHOW_NONE;
+        String counterText = null;
+        NumberFormat nf = NumberFormat.getInstance();
+        if (showFirst && showSecond) {
+            if (counter > 0 || counter2 > 0) {
+                counterText = nf.format(counter) + "/" + nf.format(counter2);
+            }
+        } else if (showFirst) {
+            if (counter > 0) {
+                counterText = nf.format(counter);
+            }
+        } else if (showSecond) {
+            if (counter2 > 0) {
+                counterText = nf.format(counter2);
+            }
+        }
+        if (counterText != null) {
+            count.setText(counterText);
             count.setVisibility(View.VISIBLE);
         } else {
             count.setVisibility(View.GONE);

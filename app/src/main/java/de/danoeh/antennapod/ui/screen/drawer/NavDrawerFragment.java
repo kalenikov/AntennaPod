@@ -63,6 +63,7 @@ import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -428,7 +429,7 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
                 () -> {
                     NavDrawerData data = DBReader.getNavDrawerData(UserPreferences.getSubscriptionsFilter(),
                             UserPreferences.getFeedOrder(), UserPreferences.getFeedCounterSetting(),
-                            Feed.STATE_SUBSCRIBED);
+                            FeedCounter.SHOW_NONE, Feed.STATE_SUBSCRIBED);
                     reclaimableSpace = EpisodeCleanupAlgorithmFactory.build().getReclaimableItems();
                     return new Pair<>(data, makeFlatDrawerData(data.tags, data.feedCounters));
                 })

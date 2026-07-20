@@ -645,11 +645,14 @@ public final class DBReader {
      */
     @NonNull
     public static synchronized NavDrawerData getNavDrawerData(@Nullable SubscriptionsFilter subscriptionsFilter,
-                                                 FeedOrder feedOrder, FeedCounter feedCounter, int feedState) {
+                                                 FeedOrder feedOrder, FeedCounter feedCounter,
+                                                 FeedCounter feedCounter2, int feedState) {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
 
         final Map<Long, Integer> feedCounters = adapter.getFeedCounters(feedCounter);
+        // Fork: second independent counter's values.
+        final Map<Long, Integer> feedCounters2 = adapter.getFeedCounters(feedCounter2);
         List<Feed> allFeeds = getFeedList();
         List<Feed> typeFilteredFeeds = new ArrayList<>();
         for (Feed feed : allFeeds) {
@@ -748,7 +751,7 @@ public final class DBReader {
         }
 
         NavDrawerData result = new NavDrawerData(feeds, tagsSorted,
-                queueSize, numNewItems, numDownloadedItems, feedCounters);
+                queueSize, numNewItems, numDownloadedItems, feedCounters, feedCounters2);
         adapter.close();
         return result;
     }

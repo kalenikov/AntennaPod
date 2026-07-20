@@ -19,6 +19,12 @@ public class FeedCounterDialog {
         EventBus.getDefault().post(new FeedItemEvent(Collections.emptyList(), true));
     }
 
+    /** Fork feature: sets the second, independent counter mode and refreshes the list. */
+    public static void selectCounter2(FeedCounter counter) {
+        UserPreferences.setFeedCounterSetting2(counter);
+        EventBus.getDefault().post(new FeedItemEvent(Collections.emptyList(), true));
+    }
+
     public static void showDialog(Context context) {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(context);
         dialog.setTitle(context.getString(R.string.pref_nav_drawer_feed_counter_title));
