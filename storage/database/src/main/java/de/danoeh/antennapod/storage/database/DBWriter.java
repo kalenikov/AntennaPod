@@ -118,7 +118,12 @@ public class DBWriter {
             }
             deleteFeedMediaSynchronous(context, media);
             if (clearPlaybackHistory && media.getItem() != null) {
-                deleteFromPlaybackHistory(media.getItem());
+                media.setLastPlayedTimeHistory(new Date(0));
+                PodDBAdapter historyAdapter = PodDBAdapter.getInstance();
+                historyAdapter.open();
+                historyAdapter.setFeedMediaLastPlayedTimeHistory(media);
+                historyAdapter.close();
+                EventBus.getDefault().post(PlaybackHistoryEvent.listUpdated());
             }
             EventBus.getDefault().post(new FeedItemEvent(media.getItem() != null
                     ? Collections.singletonList(media.getItem()) : Collections.emptyList(), false));
