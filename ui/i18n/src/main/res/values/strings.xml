@@ -799,6 +799,12 @@
     <string name="fork_feat_v23">fork.23</string>
     <string name="fork_feat_histclean_title">Удаление чистит историю</string>
     <string name="fork_feat_histclean_desc">При ручном удалении загрузки (корзина, свайп, массовое удаление) эпизод убирается и из списка «История прослушивания». Авто-удаление после прослушивания историю не трогает.</string>
+    <string name="fork_feat_v24">fork.24</string>
+    <string name="fork_feat_inbox_title">Все выпуски ленты во «Входящих»</string>
+    <string name="fork_feat_inbox_desc">Любой новый для приложения выпуск ленты помечается как новый и попадает во «Входящие» — вся новая подписка целиком и старые выпуски, дозагруженные после расширения даты отсечки в Pinchflat (снят фильтр по дате).</string>
+    <string name="fork_cl_v24" translatable="false">fork.24</string>
+    <string name="fork_cl_v24_date" translatable="false">2026-07-20</string>
+    <string name="fork_cl_v24_text">• Все новые для приложения выпуски ленты попадают во «Входящие» — включая всю новую подписку и старые выпуски после расширения даты отсечки в Pinchflat</string>
     <string name="fork_cl_v23" translatable="false">fork.23</string>
     <string name="fork_cl_v23_date" translatable="false">2026-07-20</string>
     <string name="fork_cl_v23_text">• При ручном удалении загрузки эпизод убирается и из списка «История прослушивания»</string>

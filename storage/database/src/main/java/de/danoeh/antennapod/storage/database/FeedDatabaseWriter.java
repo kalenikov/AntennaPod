@@ -70,6 +70,16 @@ public abstract class FeedDatabaseWriter {
                             + newFeed.getTitle() + ". Adding as new one.");
 
             resultFeed = newFeed;
+
+            // Fork: a brand-new subscription should put its whole catalog into the inbox, so mark
+            // its as-yet-untouched episodes as NEW. Feeds are Pinchflat-bounded, so this won't flood.
+            if (newFeed.getState() == Feed.STATE_SUBSCRIBED && newFeed.getItems() != null) {
+                for (FeedItem item : newFeed.getItems()) {
+                    if (item.getPlayState() == FeedItem.UNPLAYED) {
+                        item.setNew();
+                    }
+                }
+            }
         } else {
             Log.d(TAG, "Feed with title " + newFeed.getTitle()
                         + " already exists. Syncing new with existing one.");
@@ -153,10 +163,11 @@ public abstract class FeedDatabaseWriter {
                     }
                     savedFeedDuplicateGuesser.add(item);
 
-                    boolean shouldPerformNewEpisodesAction = item.getPubDate() == null
-                            || priorMostRecentDate == null
-                            || priorMostRecentDate.before(item.getPubDate())
-                            || priorMostRecentDate.equals(item.getPubDate());
+                    // Fork: mark every episode that is new to AntennaPod as NEW (into the inbox),
+                    // ignoring the upstream pubDate cutoff. Feeds are Pinchflat-bounded, so this
+                    // also puts a fresh subscription's whole catalog and back-filled older episodes
+                    // (from a widened Pinchflat cutoff) into the inbox.
+                    boolean shouldPerformNewEpisodesAction = true;
                     if (savedFeed.getState() == Feed.STATE_SUBSCRIBED && shouldPerformNewEpisodesAction) {
                         FeedPreferences.NewEpisodesAction action = savedFeed.getPreferences().getNewEpisodesAction();
                         if (action == FeedPreferences.NewEpisodesAction.GLOBAL) {
