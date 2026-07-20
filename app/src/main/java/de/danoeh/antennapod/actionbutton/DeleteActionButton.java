@@ -39,7 +39,7 @@ public class DeleteActionButton extends ItemActionButton {
         }
 
         LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(context, Collections.singletonList(item),
-                () -> DBWriter.deleteFeedMediaOfItem(context, media));
+                () -> DBWriter.deleteFeedMediaOfItem(context, media, true));
     }
 
     @Override

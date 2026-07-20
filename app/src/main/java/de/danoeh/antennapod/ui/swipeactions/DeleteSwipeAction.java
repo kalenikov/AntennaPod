@@ -40,7 +40,7 @@ public class DeleteSwipeAction implements SwipeAction {
         }
         LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(
                 fragment.requireContext(), Collections.singletonList(item),
-                () -> DBWriter.deleteFeedMediaOfItem(fragment.requireContext(), item.getMedia()));
+                () -> DBWriter.deleteFeedMediaOfItem(fragment.requireContext(), item.getMedia(), true));
     }
 
     @Override

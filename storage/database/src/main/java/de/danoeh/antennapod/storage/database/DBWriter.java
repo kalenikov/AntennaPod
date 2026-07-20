@@ -102,11 +102,24 @@ public class DBWriter {
      */
     public static Future<?> deleteFeedMediaOfItem(@NonNull final Context context,
                                                   final FeedMedia media) {
+        return deleteFeedMediaOfItem(context, media, false);
+    }
+
+    /**
+     * Fork: when {@code clearPlaybackHistory} is true (manual user deletion of a download), the episode
+     * is also removed from the playback history. Automatic deletion after playback and cleanup algorithms
+     * pass false, so recently listened episodes stay in the history.
+     */
+    public static Future<?> deleteFeedMediaOfItem(@NonNull final Context context,
+                                                  final FeedMedia media, final boolean clearPlaybackHistory) {
         return runOnDbThread(() -> {
             if (media == null) {
                 return;
             }
             deleteFeedMediaSynchronous(context, media);
+            if (clearPlaybackHistory && media.getItem() != null) {
+                deleteFromPlaybackHistory(media.getItem());
+            }
             EventBus.getDefault().post(new FeedItemEvent(media.getItem() != null
                     ? Collections.singletonList(media.getItem()) : Collections.emptyList(), false));
             if (UserPreferences.shouldDeleteRemoveFromQueue()) {

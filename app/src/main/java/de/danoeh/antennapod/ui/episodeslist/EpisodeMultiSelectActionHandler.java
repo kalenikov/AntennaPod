@@ -157,7 +157,7 @@ public class EpisodeMultiSelectActionHandler {
             }
             if (feedItem.getMedia().isDownloaded()) {
                 countHasMedia++;
-                DBWriter.deleteFeedMediaOfItem(activity, feedItem.getMedia());
+                DBWriter.deleteFeedMediaOfItem(activity, feedItem.getMedia(), true);
             } else if (DownloadServiceInterface.get().isDownloadingEpisode(feedItem.getMedia().getDownloadUrl())) {
                 countHasMedia++;
                 DownloadServiceInterface.get().cancel(activity, feedItem.getMedia());

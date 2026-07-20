@@ -796,6 +796,12 @@
     <string name="fork_feat_v22">fork.22</string>
     <string name="fork_feat_videorotate_title">Видео без поворота экрана</string>
     <string name="fork_feat_videorotate_desc">Тумблер в разделе KalenikovPod: видео играет в текущей ориентации (портрет), не переворачивая экран в альбомную.</string>
+    <string name="fork_feat_v23">fork.23</string>
+    <string name="fork_feat_histclean_title">Удаление чистит историю</string>
+    <string name="fork_feat_histclean_desc">При ручном удалении загрузки (корзина, свайп, массовое удаление) эпизод убирается и из списка «История прослушивания». Авто-удаление после прослушивания историю не трогает.</string>
+    <string name="fork_cl_v23" translatable="false">fork.23</string>
+    <string name="fork_cl_v23_date" translatable="false">2026-07-20</string>
+    <string name="fork_cl_v23_text">• При ручном удалении загрузки эпизод убирается и из списка «История прослушивания»</string>
     <string name="fork_cl_v22" translatable="false">fork.22</string>
     <string name="fork_cl_v22_date" translatable="false">2026-07-20</string>
     <string name="fork_cl_v22_text">• Видео без принудительного поворота экрана — тумблер в разделе KalenikovPod (по умолчанию видео играет в портрете)</string>
