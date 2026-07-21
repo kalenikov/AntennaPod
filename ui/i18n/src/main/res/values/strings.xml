@@ -807,6 +807,12 @@
     <string name="fork_feat_v25">fork.25</string>
     <string name="fork_feat_counter2_title">Второй счётчик подписок</string>
     <string name="fork_feat_counter2_desc">Второй независимый счётчик на обложках подписок со своим выпадающим меню. Значения показываются в одном бейдже через слэш (например «загруженные/всего»). Добавлен режим «всего выпусков».</string>
+    <string name="fork_feat_v26">fork.26</string>
+    <string name="fork_feat_classiclook_title">Классический вид (3.11.4)</string>
+    <string name="fork_feat_classiclook_desc">Списки выглядят как в 3.11.4: разделители-линии, крупнее вторичный текст, плоский список без скруглённых Material3-плашек, прежние отступы, скругления и подсветка. Все функции 3.12 сохранены.</string>
+    <string name="fork_cl_v26" translatable="false">fork.26</string>
+    <string name="fork_cl_v26_date" translatable="false">2026-07-21</string>
+    <string name="fork_cl_v26_text">• Возвращён классический вид списков (как в 3.11.4): разделители-линии, крупнее вторичный текст, плоский список без Material3-плашек, старые отступы и скругления — при сохранении всех функций 3.12</string>
     <string name="fork_cl_v25" translatable="false">fork.25</string>
     <string name="fork_cl_v25_date" translatable="false">2026-07-20</string>
     <string name="fork_cl_v25_text">• Второй независимый счётчик на подписках (например «загруженные/всего») — два выпадающих меню, значения показываются через слэш; добавлен режим «всего выпусков»</string>

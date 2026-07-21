@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.elevation.SurfaceColors;
+
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -31,6 +33,7 @@ import de.danoeh.antennapod.ui.common.Converter;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.ui.common.CircularProgressBar;
+import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.episodes.ImageResourceUtils;
 
 /**
@@ -120,7 +123,7 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
             progressBar.setVisibility(View.GONE);
             duration.setVisibility(View.GONE);
             position.setVisibility(View.GONE);
-            itemView.setActivated(false);
+            itemView.setBackgroundResource(ThemeUtils.getDrawableFromAttr(activity, R.attr.selectableItemBackground));
         }
 
         if (coverHolder.getVisibility() == View.VISIBLE) {
@@ -137,7 +140,12 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         isVideo.setVisibility(media.getMediaType() == MediaType.VIDEO ? View.VISIBLE : View.GONE);
         duration.setVisibility(media.getDuration() > 0 ? View.VISIBLE : View.GONE);
 
-        itemView.setActivated(PlaybackStatus.isCurrentlyPlaying(media));
+        if (PlaybackStatus.isCurrentlyPlaying(media)) {
+            float density = activity.getResources().getDisplayMetrics().density;
+            itemView.setBackgroundColor(SurfaceColors.getColorForElevation(activity, 8 * density));
+        } else {
+            itemView.setBackgroundResource(ThemeUtils.getDrawableFromAttr(activity, R.attr.selectableItemBackground));
+        }
 
         if (DownloadServiceInterface.get().isDownloadingEpisode(media.getDownloadUrl())) {
             float percent = 0.01f * DownloadServiceInterface.get().getProgress(media.getDownloadUrl());
@@ -212,7 +220,7 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         position.setVisibility(View.GONE);
         dragHandle.setVisibility(View.GONE);
         size.setText("");
-        itemView.setActivated(false);
+        itemView.setBackgroundResource(ThemeUtils.getDrawableFromAttr(activity, R.attr.selectableItemBackground));
         placeholder.setText("");
         if (coverHolder.getVisibility() == View.VISIBLE) {
             new CoverLoader()

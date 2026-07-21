@@ -20,8 +20,6 @@
         android:baselineAligned="false"
         android:paddingStart="12dp"
         android:paddingEnd="0dp"
-        android:background="@drawable/bg_episode_list_item"
-        android:duplicateParentState="true"
         tools:ignore="UselessParent">
 
         <LinearLayout
@@ -50,7 +48,7 @@
             android:layout_marginTop="@dimen/listitem_threeline_verticalpadding"
             android:layout_marginEnd="@dimen/listitem_threeline_textleftpadding"
             app:cardBackgroundColor="@color/non_square_icon_background"
-            app:cardCornerRadius="8dp"
+            app:cardCornerRadius="4dp"
             app:cardPreventCornerOverlap="false"
             app:cardElevation="0dp">
 
@@ -99,32 +97,32 @@
 
                 <ImageView
                     android:id="@+id/statusInbox"
-                    android:layout_width="12sp"
-                    android:layout_height="12sp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:contentDescription="@string/is_inbox_label"
                     app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_inbox" />
 
                 <ImageView
                     android:id="@+id/ivIsVideo"
-                    android:layout_width="12sp"
-                    android:layout_height="12sp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:contentDescription="@string/media_type_video_label"
                     app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_videocam" />
 
                 <ImageView
                     android:id="@+id/isFavorite"
-                    android:layout_width="12sp"
-                    android:layout_height="12sp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:contentDescription="@string/is_favorite_label"
                     app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_star" />
 
                 <ImageView
                     android:id="@+id/ivInPlaylist"
-                    android:layout_width="12sp"
-                    android:layout_height="12sp"
+                    android:layout_width="14sp"
+                    android:layout_height="14sp"
                     android:contentDescription="@string/in_queue_label"
                     app:tint="?attr/colorOnSurfaceVariant"
                     app:srcCompat="@drawable/ic_playlist_play" />
@@ -137,14 +135,14 @@
                     android:layout_marginEnd="4dp"
                     android:text="·"
                     android:importantForAccessibility="no"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle" />
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle" />
 
                 <TextView
                     android:id="@+id/txtvPubDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle"
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle"
                     tools:text="@sample/episodes.json/data/published_at" />
 
                 <TextView
@@ -153,14 +151,14 @@
                     android:layout_marginEnd="4dp"
                     android:text="·"
                     android:importantForAccessibility="no"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle" />
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle" />
 
                 <TextView
                     android:id="@+id/size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle"
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle"
                     tools:text="10 MB" />
 
             </LinearLayout>
@@ -177,7 +175,7 @@
                 android:importantForAccessibility="no"
                 android:ellipsize="end"
                 android:textAlignment="viewStart"
-                style="@style/AntennaPod.TextView.FeedListItemPrimaryTitle"
+                style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
                 tools:text="@sample/episodes.json/data/title" />
 
             <LinearLayout
@@ -192,7 +190,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="0dp"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle"
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle"
                     tools:text="00:42:23" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -209,7 +207,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="0dp"
-                    style="@style/AntennaPod.TextView.FeedListItemSecondaryTitle"
+                    style="@style/AntennaPod.TextView.ListItemSecondaryTitle"
                     tools:text="@sample/episodes.json/data/duration" />
 
             </LinearLayout>

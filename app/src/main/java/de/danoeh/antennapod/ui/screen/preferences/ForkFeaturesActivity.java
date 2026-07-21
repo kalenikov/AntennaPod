@@ -40,6 +40,7 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_histclean_title, R.string.fork_feat_histclean_desc, R.string.fork_feat_v23},
             {R.string.fork_feat_inbox_title, R.string.fork_feat_inbox_desc, R.string.fork_feat_v24},
             {R.string.fork_feat_counter2_title, R.string.fork_feat_counter2_desc, R.string.fork_feat_v25},
+            {R.string.fork_feat_classiclook_title, R.string.fork_feat_classiclook_desc, R.string.fork_feat_v26},
     };
 
     @Override
