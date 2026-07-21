@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
 import androidx.core.util.Pair;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -132,6 +135,18 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         viewBinding = FeedItemListFragmentBinding.inflate(inflater);
+        // Fork: the bottom system-bar (navigation) inset is already handled globally by MainActivity
+        // (mini-player margin + bottom_padding). This screen's CoordinatorLayout (fitsSystemWindows)
+        // otherwise re-applies it, leaving an empty white strip above the mini-player. Keep the top
+        // inset (for the collapsing header) but drop the bottom.
+        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.coordinatorLayout, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            WindowInsetsCompat noBottom = new WindowInsetsCompat.Builder(insets)
+                    .setInsets(WindowInsetsCompat.Type.systemBars(),
+                            Insets.of(bars.left, bars.top, bars.right, 0))
+                    .build();
+            return ViewCompat.onApplyWindowInsets(v, noBottom);
+        });
         viewBinding.toolbar.inflateMenu(R.menu.feedlist);
         viewBinding.toolbar.setOnMenuItemClickListener(this);
         viewBinding.toolbar.setOnLongClickListener(v -> {

@@ -810,6 +810,12 @@
     <string name="fork_feat_v26">fork.26</string>
     <string name="fork_feat_classiclook_title">Классический вид (3.11.4)</string>
     <string name="fork_feat_classiclook_desc">Списки выглядят как в 3.11.4: разделители-линии, крупнее вторичный текст, плоский список без скруглённых Material3-плашек, прежние отступы, скругления и подсветка. Все функции 3.12 сохранены.</string>
+    <string name="fork_feat_v27">fork.27</string>
+    <string name="fork_feat_nostrip_title">Без белой полосы на экране канала</string>
+    <string name="fork_feat_nostrip_desc">Убран лишний нижний системный отступ на экране списка эпизодов канала, из-за которого над мини-плеером появлялась пустая белая полоса, перекрывавшая часть списка.</string>
+    <string name="fork_cl_v27" translatable="false">fork.27</string>
+    <string name="fork_cl_v27_date" translatable="false">2026-07-21</string>
+    <string name="fork_cl_v27_text">• Убрана пустая белая полоса над мини-плеером на экране канала (лишний нижний системный отступ)</string>
     <string name="fork_cl_v26" translatable="false">fork.26</string>
     <string name="fork_cl_v26_date" translatable="false">2026-07-21</string>
     <string name="fork_cl_v26_text">• Возвращён классический вид списков (как в 3.11.4): разделители-линии, крупнее вторичный текст, плоский список без Material3-плашек, старые отступы и скругления — при сохранении всех функций 3.12</string>
