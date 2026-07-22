@@ -11,6 +11,7 @@
         <item>FavoritesFragment</item>
         <item>StatisticsFragment</item>
         <item>AddFeedFragment</item>
+        <item>KalenikovPodFragment</item>
         <item>SubscriptionList</item>
     </string-array>
 </resources>

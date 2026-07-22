@@ -10,6 +10,7 @@ import de.danoeh.antennapod.ui.screen.InboxFragment;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
 import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
 import de.danoeh.antennapod.ui.screen.home.HomeFragment;
+import de.danoeh.antennapod.ui.screen.preferences.KalenikovPodFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionFragment;
 import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
@@ -37,6 +38,8 @@ public abstract class NavigationNames {
                 return R.drawable.ic_add;
             case FavoritesFragment.TAG:
                 return R.drawable.ic_star;
+            case KalenikovPodFragment.TAG:
+                return R.drawable.ic_kalenikovpod;
             default:
                 return 0;
         }
@@ -66,6 +69,8 @@ public abstract class NavigationNames {
                 return R.string.favorite_episodes_label;
             case NavListAdapter.SUBSCRIPTION_LIST_TAG:
                 return R.string.subscriptions_list_label;
+            case KalenikovPodFragment.TAG:
+                return R.string.kalenikovpod_pref;
             default:
                 return 0;
         }
@@ -95,6 +100,8 @@ public abstract class NavigationNames {
                 return R.string.favorite_episodes_label_short;
             case NavListAdapter.SUBSCRIPTION_LIST_TAG:
                 return R.string.subscriptions_list_label;
+            case KalenikovPodFragment.TAG:
+                return R.string.kalenikovpod_label_short;
             default:
                 return 0;
         }
@@ -120,6 +127,8 @@ public abstract class NavigationNames {
                 return R.id.bottom_navigation_subscriptions;
             case StatisticsFragment.TAG:
                 return R.id.bottom_navigation_statistics;
+            case KalenikovPodFragment.TAG:
+                return R.id.bottom_navigation_kalenikovpod;
             case HomeFragment.TAG: // fall-through
             default:
                 return R.id.bottom_navigation_home;
@@ -147,6 +156,8 @@ public abstract class NavigationNames {
             return StatisticsFragment.TAG;
         } else if (id == R.id.bottom_navigation_home) {
             return HomeFragment.TAG;
+        } else if (id == R.id.bottom_navigation_kalenikovpod) {
+            return KalenikovPodFragment.TAG;
         }
         return null;
     }

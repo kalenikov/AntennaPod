@@ -98,7 +98,9 @@ public class KalenikovPodPreferencesFragment extends AnimatedPreferenceFragment 
     @Override
     public void onStart() {
         super.onStart();
-        ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.kalenikovpod_pref);
+        if (getActivity() instanceof PreferenceActivity) {
+            ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.kalenikovpod_pref);
+        }
     }
 
     @Override

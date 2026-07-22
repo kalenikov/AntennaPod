@@ -734,6 +734,7 @@
     <string name="fork_update_error">Не удалось проверить обновления: %1$s</string>
     <string name="kalenikovpod_pref" translatable="false">KalenikovPod</string>
     <string name="kalenikovpod_pref_summary">Обновления, фичи и инструменты форка</string>
+    <string name="kalenikovpod_label_short" translatable="false">KalPod</string>
     <string name="fork_changelog_label">Ченжлог</string>
     <string name="fork_changelog_summary">История изменений форка по релизам</string>
     <string name="fork_changelog_title">Что нового в KalenikovPod</string>
@@ -812,8 +813,14 @@
     <string name="fork_feat_classiclook_desc">Списки выглядят как в 3.11.4: разделители-линии, крупнее вторичный текст, плоский список без скруглённых Material3-плашек, прежние отступы, скругления и подсветка. Все функции 3.12 сохранены.</string>
     <string name="fork_feat_v27">fork.27</string>
     <string name="fork_feat_v28">fork.28</string>
+    <string name="fork_feat_v29">fork.29</string>
+    <string name="fork_feat_navsection_title">KalenikovPod в навигации</string>
+    <string name="fork_feat_navsection_desc">Раздел KalenikovPod (обновления, фичи, логи, экспорт/импорт настроек) теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию», а не только через Настройки.</string>
     <string name="fork_feat_nostrip_title">Без белой полосы на экране канала</string>
     <string name="fork_feat_nostrip_desc">Убран лишний нижний системный отступ на экране списка эпизодов канала, из-за которого над мини-плеером появлялась пустая белая полоса, перекрывавшая часть списка.</string>
+    <string name="fork_cl_v29" translatable="false">fork.29</string>
+    <string name="fork_cl_v29_date" translatable="false">2026-07-22</string>
+    <string name="fork_cl_v29_text">• Раздел KalenikovPod теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию» — не только через Настройки</string>
     <string name="fork_cl_v28" translatable="false">fork.28</string>
     <string name="fork_cl_v28_date" translatable="false">2026-07-22</string>
     <string name="fork_cl_v28_text">• Белая полоса над мини-плеером на экране канала действительно убрана (fork.27 не срабатывал на Android 16): лишний нижний системный отступ переносом fitsSystemWindows с корневого CoordinatorLayout на AppBarLayout — как на экране Подписок</string>
