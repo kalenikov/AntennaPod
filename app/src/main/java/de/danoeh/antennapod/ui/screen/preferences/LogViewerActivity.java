@@ -112,7 +112,7 @@ public class LogViewerActivity extends ToolbarActivity {
         Context appContext = getApplicationContext();
         new Thread(() -> {
             final String text = tab == TAB_APP
-                    ? RootMigrator.readAppLogcat()
+                    ? firstNonEmpty(RootMigrator.readAppLogcat(), getString(R.string.log_app_empty))
                     : firstNonEmpty(RootMigrator.readMigrationLog(appContext),
                         getString(R.string.log_empty));
             runOnUiThread(() -> logView.setText(text));

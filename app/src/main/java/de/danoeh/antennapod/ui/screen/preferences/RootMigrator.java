@@ -124,18 +124,39 @@ public final class RootMigrator {
         }
     }
 
-    /** Clears the device logcat buffer (best effort, needs root). */
+    /**
+     * Clears this app's own logcat buffer (best effort, no root). Since Android 4.1 a plain
+     * {@code logcat} invoked by the app only sees its own UID's entries, so this needs no su.
+     */
     public static void clearLogcat() {
-        runSuScript("logcat -c\n");
+        try {
+            new ProcessBuilder("logcat", "-c").redirectErrorStream(true).start().waitFor();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to clear app logcat", e);
+        }
     }
 
-    /** Recent device logcat (needs root); used by the "App" tab of the log viewer. */
+    /**
+     * Recent logcat of THIS app (its own UID), used by the "App" tab of the log viewer.
+     * No root required: since Android 4.1 an app reading logcat only receives its own log
+     * entries. Returns an empty string when the buffer holds nothing yet.
+     */
     public static String readAppLogcat() {
-        Result r = runSuScript("logcat -d -v time -t 2000\n");
-        if (r.output == null || r.output.trim().isEmpty()) {
-            return "logcat empty or root denied (exit " + r.exitCode + ")";
+        Process process = null;
+        try {
+            process = new ProcessBuilder("logcat", "-d", "-v", "time", "-t", "5000")
+                    .redirectErrorStream(true)
+                    .start();
+            String output = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
+            process.waitFor();
+            return output == null ? "" : output;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to read app logcat", e);
+            if (process != null) {
+                process.destroy();
+            }
+            return "Не удалось прочитать логи: " + e;
         }
-        return r.output;
     }
 
     private static String buildScript(String src, String dst) {

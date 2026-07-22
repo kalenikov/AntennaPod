@@ -704,6 +704,7 @@
     <string name="log_copied">Скопировано</string>
     <string name="log_loading">Загрузка…</string>
     <string name="log_empty">Лог пуст. Запустите импорт из AntennaPod.</string>
+    <string name="log_app_empty">Логи приложения пусты. Поработайте в приложении и нажмите «Обновить» — здесь появятся его записи из системного буфера (logcat) за текущий сеанс.</string>
     <!-- KalenikovPod fork: features list screen -->
     <string name="fork_features_label">Фичи форка</string>
     <string name="fork_features_summary">Список доработок KalenikovPod поверх AntennaPod</string>
@@ -818,6 +819,9 @@
     <string name="fork_feat_navsection_desc">Раздел KalenikovPod (обновления, фичи, логи, экспорт/импорт настроек) теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию», а не только через Настройки.</string>
     <string name="fork_feat_nostrip_title">Без белой полосы на экране канала</string>
     <string name="fork_feat_nostrip_desc">Убран лишний нижний системный отступ на экране списка эпизодов канала, из-за которого над мини-плеером появлялась пустая белая полоса, перекрывавшая часть списка.</string>
+    <string name="fork_cl_v30" translatable="false">fork.30</string>
+    <string name="fork_cl_v30_date" translatable="false">2026-07-22</string>
+    <string name="fork_cl_v30_text">• Вкладка «Приложение» в Логах теперь показывает логи самого приложения без root (раньше падала с ошибкой «su не найден» на нерутованных телефонах): читаем собственный logcat процесса приложения (фильтр по UID, root не нужен)</string>
     <string name="fork_cl_v29" translatable="false">fork.29</string>
     <string name="fork_cl_v29_date" translatable="false">2026-07-22</string>
     <string name="fork_cl_v29_text">• Раздел KalenikovPod теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию» — не только через Настройки</string>
