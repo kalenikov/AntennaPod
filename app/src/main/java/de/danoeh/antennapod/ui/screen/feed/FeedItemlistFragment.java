@@ -405,13 +405,19 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         if (feed == null || feed.getItems() == null) {
             return;
         }
+        FeedItemFilter filter = currentItemFilter();
         for (int i = 0, size = event.items.size(); i < size; i++) {
             FeedItem item = event.items.get(i);
             int pos = FeedItemEvent.indexOfItemWithId(feed.getItems(), item.getId());
             if (pos >= 0) {
                 feed.getItems().remove(pos);
-                feed.getItems().add(pos, item);
-                adapter.notifyItemChangedCompat(pos);
+                if (filter.matches(item)) {
+                    feed.getItems().add(pos, item);
+                    adapter.notifyItemChangedCompat(pos);
+                } else {
+                    adapter.notifyItemRemoved(pos);
+                    updateToolbar();
+                }
             } else if (item.getFeedId() == feedID) {
                 // Filtered-out item of this feed was touched, reload all
                 updateUi();
@@ -800,5 +806,18 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             FeedItemMenuHandler.onPrepareMenu(viewBinding.floatingSelectMenu.getMenu(), getSelectedItems());
             viewBinding.floatingSelectMenu.updateItemVisibility();
         }
+    }
+
+    /**
+     * Fork: the filter this screen currently displays its items with. Feed state properties are
+     * always included because this screen also shows archived and not-subscribed feeds, which
+     * {@link FeedItemFilter#matches} would otherwise reject entirely.
+     */
+    private FeedItemFilter currentItemFilter() {
+        FeedItemFilter filter = feed.getItemFilter();
+        if (filter == null) {
+            return FeedItemFilter.unfiltered();
+        }
+        return new FeedItemFilter(filter, FeedItemFilter.INCLUDE_ALL_FEED_STATES);
     }
 }
