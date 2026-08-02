@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import com.bumptech.glide.Glide;
@@ -55,7 +54,6 @@ import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenan
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
-import de.danoeh.antennapod.ui.TransitionEffect;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.ui.common.NavigationToolbarActivity;
@@ -84,8 +82,8 @@ import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import de.danoeh.antennapod.ui.screen.rating.RatingDialogManager;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionFragment;
 import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
-import de.danoeh.antennapod.ui.view.BottomSheetBackPressedCallback;
-import de.danoeh.antennapod.ui.view.LockableBottomSheetBehavior;
+import de.danoeh.antennapod.ui.common.BottomSheetBackPressedCallback;
+import de.danoeh.antennapod.ui.common.LockableBottomSheetBehavior;
 import org.apache.commons.lang3.ArrayUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -116,7 +114,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     private LockableBottomSheetBehavior<FragmentContainerView> sheetBehavior;
     private BottomSheetBackPressedCallback bottomSheetBackPressedCallback;
     private OnBackPressedCallback openDefaultPageBackPressedCallback;
-    private final RecyclerView.RecycledViewPool recycledViewPool = new RecyclerView.RecycledViewPool();
     private int lastTheme = 0;
     private Insets systemBarInsets = Insets.NONE;
 
@@ -130,7 +127,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        recycledViewPool.setMaxRecycledViews(R.id.view_type_episode_item, 25);
         checkFirstLaunch();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -424,10 +420,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         playerContent.setPadding(systemBarInsets.left, systemBarInsets.top, systemBarInsets.right, 0);
     }
 
-    public RecyclerView.RecycledViewPool getRecycledViewPool() {
-        return recycledViewPool;
-    }
-
     public Fragment createFragmentInstance(String tag, Bundle args) {
         Log.d(TAG, "loadFragment(tag: " + tag + ", args: " + args + ")");
         Fragment fragment;
@@ -499,20 +491,17 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public void loadFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        // clear back stack
-        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
-            fragmentManager.popBackStack();
-        }
+        // Clear all synchronously to avoid conflicting with predictive back gesture cancellation
+        fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         FragmentTransaction t = fragmentManager.beginTransaction();
         t.replace(R.id.main_content_view, fragment, MAIN_FRAGMENT_TAG);
-        fragmentManager.popBackStack();
         // TODO: we have to allow state loss here
         // since this function can get called from an AsyncTask which
         // could be finishing after our app has already committed state
         // and is about to get shutdown.  What we *should* do is
         // not commit anything in an AsyncTask, but that's a bigger
         // change than we want now.
-        t.commitAllowingStateLoss();
+        t.commitNowAllowingStateLoss();
 
         if (drawerLayout != null) { // Tablet layout does not have a drawer
             drawerLayout.closeDrawer(navDrawer);
@@ -520,24 +509,12 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         updateMainBackCallbackEnabledState();
     }
 
-    public void loadChildFragment(Fragment fragment, TransitionEffect transition, String navigationTag) {
+    public void loadChildFragment(Fragment fragment, String navigationTag) {
         Objects.requireNonNull(fragment);
         if (navigationTag != null && bottomNavigation != null) {
             bottomNavigation.updateSelectedItem(navigationTag);
         }
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        if (transition == TransitionEffect.FADE) {
-            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        } else if (transition == TransitionEffect.SLIDE) {
-            transaction.setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out);
-        }
-
-        transaction
+        getSupportFragmentManager().beginTransaction()
                 .hide(getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG))
                 .add(R.id.main_content_view, fragment, MAIN_FRAGMENT_TAG)
                 .addToBackStack(null)
@@ -545,12 +522,8 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         updateMainBackCallbackEnabledState();
     }
 
-    public void loadChildFragment(Fragment fragment, TransitionEffect transition) {
-        loadChildFragment(fragment, transition, null);
-    }
-
     public void loadChildFragment(Fragment fragment) {
-        loadChildFragment(fragment, TransitionEffect.NONE);
+        loadChildFragment(fragment, null);
     }
 
     @Override
@@ -767,7 +740,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
                 if (intent.getBooleanExtra(MainActivityStarter.EXTRA_CLEAR_BACK_STACK, true)) {
                     loadFragment(tag, null);
                 } else {
-                    loadChildFragment(createFragmentInstance(tag, args), TransitionEffect.NONE, tag);
+                    loadChildFragment(createFragmentInstance(tag, args), tag);
                 }
             }
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
