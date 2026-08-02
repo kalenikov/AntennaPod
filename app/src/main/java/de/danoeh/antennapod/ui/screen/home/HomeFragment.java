@@ -31,7 +31,7 @@ import de.danoeh.antennapod.ui.screen.home.sections.QueueSection;
 import de.danoeh.antennapod.ui.screen.home.sections.SubscriptionsSection;
 import de.danoeh.antennapod.ui.screen.home.settingsdialog.HomePreferences;
 import de.danoeh.antennapod.ui.screen.home.settingsdialog.HomeSectionsSettingsDialog;
-import de.danoeh.antennapod.ui.view.LiftOnScrollListener;
+import de.danoeh.antennapod.ui.common.LiftOnScrollListener;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -93,6 +93,9 @@ public class HomeFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     }
 
     private void addSection(Fragment section, int id) {
+        if (section == null) { // Can happen when stored settings reference a section that no longer exists
+            return;
+        }
         FragmentContainerView containerView = new FragmentContainerView(getContext());
         containerView.setId(id);
         viewBinding.homeContainer.addView(containerView);
