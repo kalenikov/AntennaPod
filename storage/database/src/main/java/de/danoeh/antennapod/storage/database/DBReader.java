@@ -675,24 +675,14 @@ public final class DBReader {
                         // reverse natural order: podcast with most unplayed episodes first
                         return -1;
                     } else if (counterLhs == counterRhs) {
-                        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+                        return compareSortTitles(lhs, rhs);
                     } else {
                         return 1;
                     }
                 };
                 break;
             case ALPHABETICAL:
-                comparator = (lhs, rhs) -> {
-                    String t1 = lhs.getTitle();
-                    String t2 = rhs.getTitle();
-                    if (t1 == null) {
-                        return 1;
-                    } else if (t2 == null) {
-                        return -1;
-                    } else {
-                        return t1.compareToIgnoreCase(t2);
-                    }
-                };
+                comparator = DBReader::compareSortTitles;
                 break;
             case MOST_PLAYED:
                 final Map<Long, Integer> playedCounters = adapter.getPlayedEpisodesCounters();
@@ -703,7 +693,7 @@ public final class DBReader {
                         // podcast with most played episodes first
                         return -1;
                     } else if (counterLhs == counterRhs) {
-                        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+                        return compareSortTitles(lhs, rhs);
                     } else {
                         return 1;
                     }
@@ -820,5 +810,21 @@ public final class DBReader {
         } finally {
             adapter.close();
         }
+    }
+
+    /**
+     * Fork: compares feeds by the title they are sorted under, which is the custom cover text
+     * when one is set and the feed title otherwise. Used both for the alphabetical order and as
+     * the tie-breaker of the counter-based orders.
+     */
+    private static int compareSortTitles(Feed lhs, Feed rhs) {
+        String t1 = ForkFeedCustomization.getSortTitle(lhs.getId(), lhs.getTitle());
+        String t2 = ForkFeedCustomization.getSortTitle(rhs.getId(), rhs.getTitle());
+        if (t1 == null) {
+            return 1;
+        } else if (t2 == null) {
+            return -1;
+        }
+        return t1.compareToIgnoreCase(t2);
     }
 }

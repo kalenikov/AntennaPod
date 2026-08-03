@@ -96,6 +96,71 @@ public class ForkFeedCustomizationTest {
     }
 
     @Test
+    public void sortTitleFallsBackToFeedTitle() {
+        // No override at all.
+        assertEquals("Александр Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+
+        // "First letter" is derived from the title, so it must not become the sort key.
+        ForkFeedCustomization.setCoverOverride(1, ForkFeedCustomization.COVER_LETTER);
+        assertEquals("Александр Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+
+        // A custom image says nothing about ordering either.
+        ForkFeedCustomization.setCoverOverride(1, ForkFeedCustomization.COVER_IMAGE_PREFIX + "/data/x.img");
+        assertEquals("Александр Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+
+        // Blank custom text counts as "not set".
+        ForkFeedCustomization.setCoverOverride(1, ForkFeedCustomization.COVER_TEXT_PREFIX + "   ");
+        assertEquals("Александр Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+    }
+
+    @Test
+    public void sortTitleUsesCustomText() {
+        ForkFeedCustomization.setCoverOverride(1, ForkFeedCustomization.COVER_TEXT_PREFIX + "Герасимов");
+        assertEquals("Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+
+        // Surrounding whitespace is ignored.
+        ForkFeedCustomization.setCoverOverride(1, ForkFeedCustomization.COVER_TEXT_PREFIX + "  Герасимов  ");
+        assertEquals("Герасимов", ForkFeedCustomization.getSortTitle(1, "Александр Герасимов"));
+    }
+
+    @Test
+    public void customTextChangesAlphabeticalPosition() {
+        Feed gerasimov = makeTitledFeed(1, "Александр Герасимов | Психология");
+        Feed vafin = makeTitledFeed(2, "Вафин");
+        Feed dolin = makeTitledFeed(3, "Долин");
+        ForkFeedCustomization.setCoverOverride(gerasimov.getId(),
+                ForkFeedCustomization.COVER_TEXT_PREFIX + "Герасимов");
+
+        // Same comparator as DBReader.compareSortTitles.
+        List<Feed> feeds = new ArrayList<>(Arrays.asList(gerasimov, vafin, dolin));
+        feeds.sort((lhs, rhs) -> ForkFeedCustomization.getSortTitle(lhs.getId(), lhs.getTitle())
+                .compareToIgnoreCase(ForkFeedCustomization.getSortTitle(rhs.getId(), rhs.getTitle())));
+
+        // Sorted by "Герасимов", so it lands between Вафин and Долин instead of first by "А".
+        assertEquals(Arrays.asList(2L, 1L, 3L), idsOf(feeds));
+
+        // Without the custom text it goes back to the front.
+        ForkFeedCustomization.setCoverOverride(gerasimov.getId(), null);
+        feeds.sort((lhs, rhs) -> ForkFeedCustomization.getSortTitle(lhs.getId(), lhs.getTitle())
+                .compareToIgnoreCase(ForkFeedCustomization.getSortTitle(rhs.getId(), rhs.getTitle())));
+        assertEquals(Arrays.asList(1L, 2L, 3L), idsOf(feeds));
+    }
+
+    private Feed makeTitledFeed(long id, String title) {
+        Feed feed = makeFeed(id);
+        feed.setTitle(title);
+        return feed;
+    }
+
+    private List<Long> idsOf(List<Feed> feeds) {
+        List<Long> ids = new ArrayList<>();
+        for (Feed feed : feeds) {
+            ids.add(feed.getId());
+        }
+        return ids;
+    }
+
+    @Test
     public void coverOverrideModes() {
         // No override: real cover, no tile text.
         assertNull(ForkFeedCustomization.getCoverTileText(1, "Download"));

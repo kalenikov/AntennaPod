@@ -89,6 +89,23 @@ public class ForkFeedCustomization {
         return null;
     }
 
+    /**
+     * Title this feed is sorted by: the custom cover text when one is set, otherwise the feed
+     * title. The "first letter" override is deliberately ignored — it is derived from the title
+     * itself, so sorting by it would only scramble the list.
+     */
+    @Nullable
+    public static String getSortTitle(long feedId, @Nullable String feedTitle) {
+        String override = getCoverOverride(feedId);
+        if (override != null && override.startsWith(COVER_TEXT_PREFIX)) {
+            String text = override.substring(COVER_TEXT_PREFIX.length()).trim();
+            if (!text.isEmpty()) {
+                return text;
+            }
+        }
+        return feedTitle;
+    }
+
     /** Path of the custom cover image, or null. */
     @Nullable
     public static String getCoverImagePath(long feedId) {
