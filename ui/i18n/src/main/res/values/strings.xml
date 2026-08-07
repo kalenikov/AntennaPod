@@ -794,6 +794,15 @@
     <string name="fork_feat_titlelines_desc">Настройка в разделе KalenikovPod: название эпизода в списках занимает 2, 3 или 4 строки (по умолчанию 3).</string>
     <string name="fork_pinchflat_label">Открыть в Pinchflat</string>
     <string name="fork_open_pinchflat">Открыть Pinchflat</string>
+    <string name="fork_compact_list_label">Компактный список</string>
+    <string name="fork_feat_v35">fork.35</string>
+    <string name="fork_feat_compactlist_title">Компактный режим списка подписок</string>
+    <string name="fork_feat_compactlist_desc">Переключатель «Компактный список» в меню экрана «Подписки», виден только в режиме списка. Миниатюры меньше (32dp вместо 56dp), название в одну строку, отступы меньше. Высота строки 44dp вместо 72dp — на экран помещается вдвое больше подписок.</string>
+    <string name="fork_feat_histdelete_title">Удаление прослушанных из истории</string>
+    <string name="fork_feat_histdelete_desc">На экране «История прослушивания» вместо кнопки «Очистить историю» — кнопка «Удалить прослушанные»: убирает из истории все прослушанные эпизоды и стирает их загруженные файлы с диска. Непрослушанные эпизоды в истории остаются.</string>
+    <string name="fork_delete_played_history_label">Удалить прослушанные</string>
+    <string name="fork_delete_played_history_confirm">Удалить из истории %1$d прослушанных эпизодов и стереть их загруженные файлы?</string>
+    <string name="fork_delete_played_history_none">В истории нет прослушанных эпизодов</string>
     <string name="fork_feat_v19">fork.19</string>
     <string name="fork_feat_pinchflat_title">Интеграция с Pinchflat</string>
     <string name="fork_feat_pinchflat_desc">Кнопка в шапке канала-источника открывает страницу этого источника в Pinchflat, а пункт «Открыть Pinchflat» в меню подписок — список источников. Адрес берётся из URL самих подписок, не захардкожен.</string>
@@ -819,6 +828,9 @@
     <string name="fork_feat_navsection_desc">Раздел KalenikovPod (обновления, фичи, логи, экспорт/импорт настроек) теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию», а не только через Настройки.</string>
     <string name="fork_feat_nostrip_title">Без белой полосы на экране канала</string>
     <string name="fork_feat_nostrip_desc">Убран лишний нижний системный отступ на экране списка эпизодов канала, из-за которого над мини-плеером появлялась пустая белая полоса, перекрывавшая часть списка.</string>
+    <string name="fork_cl_v35" translatable="false">fork.35</string>
+    <string name="fork_cl_v35_date" translatable="false">2026-08-07</string>
+    <string name="fork_cl_v35_text">• Компактный режим списка подписок: пункт «Компактный список» в меню экрана «Подписки» (виден только в режиме списка). Миниатюры меньше, заголовок в одну строку, высота строки 44dp вместо 72dp — на экран помещается в полтора раза больше подписок\n• На экране «История прослушивания» вместо «Очистить историю» — кнопка «Удалить прослушанные»: убирает из истории прослушанные эпизоды и стирает их загруженные файлы</string>
     <string name="fork_cl_v34" translatable="false">fork.34</string>
     <string name="fork_cl_v34_date" translatable="false">2026-08-03</string>
     <string name="fork_cl_v34_text">• Свой текст на обложке подписки теперь учитывается при сортировке. Если для подписки задан свой текст (например «Герасимов» для «Александр Герасимов | Психология»), список сортируется по нему, а не по полному названию. Работает во всех режимах сортировки и на всех экранах — подписки, боковое меню, выбор тегов. Вариант «Первая буква названия» на порядок не влияет</string>

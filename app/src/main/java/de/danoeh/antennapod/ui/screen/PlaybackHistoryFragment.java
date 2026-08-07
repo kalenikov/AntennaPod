@@ -85,6 +85,11 @@ public class PlaybackHistoryFragment extends EpisodesListFragment {
 
             return true;
         }
+        if (item.getItemId() == R.id.fork_delete_played_history_item) {
+            // Fork: delete played episodes from the history together with their downloaded files.
+            ForkHistoryCleanup.confirmAndRun(requireActivity());
+            return true;
+        }
         return false;
     }
 
@@ -92,6 +97,14 @@ public class PlaybackHistoryFragment extends EpisodesListFragment {
     protected void updateToolbar() {
         // Not calling super, as we do not have a refresh button that could be updated
         toolbar.getMenu().findItem(R.id.clear_history_item).setVisible(!episodes.isEmpty());
+        // Fork: the stock action wipes the whole history without touching the downloads. Hide it
+        // in favour of "delete played" below. Kept in the menu so the upstream findItem above
+        // can never fail after a merge.
+        toolbar.getMenu().findItem(R.id.clear_history_item).setVisible(false);
+        MenuItem deletePlayed = toolbar.getMenu().findItem(R.id.fork_delete_played_history_item);
+        if (deletePlayed != null) {
+            deletePlayed.setVisible(!episodes.isEmpty());
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

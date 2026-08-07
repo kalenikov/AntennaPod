@@ -267,6 +267,13 @@ public class SubscriptionFragment extends Fragment
         if (openPinchflat != null) {
             openPinchflat.setVisible(pinchflatOrigin() != null);
         }
+        // Fork: compact mode only applies to the single-column list, like pref_show_subscription_title
+        // is only shown for the grid.
+        MenuItem compactList = toolbar.getMenu().findItem(R.id.subscriptions_compact_list);
+        if (compactList != null) {
+            compactList.setVisible(ForkCompactList.appliesTo(columns));
+            compactList.setChecked(ForkCompactList.isEnabled());
+        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -371,6 +378,12 @@ public class SubscriptionFragment extends Fragment
             if (origin != null) {
                 IntentUtils.openInBrowser(requireContext(), origin + "/sources");
             }
+            return true;
+        } else if (itemId == R.id.subscriptions_compact_list) {
+            // Fork: compact list mode toggle.
+            item.setChecked(!item.isChecked());
+            ForkCompactList.setEnabled(item.isChecked());
+            subscriptionAdapter.notifyDataSetChanged();
             return true;
         }
         return false;

@@ -24,6 +24,7 @@ public class ForkChangelog {
 
     /** {version, date, changes} — NEWEST FIRST. */
     private static final int[][] ENTRIES = {
+            {R.string.fork_cl_v35, R.string.fork_cl_v35_date, R.string.fork_cl_v35_text},
             {R.string.fork_cl_v34, R.string.fork_cl_v34_date, R.string.fork_cl_v34_text},
             {R.string.fork_cl_v33, R.string.fork_cl_v33_date, R.string.fork_cl_v33_text},
             {R.string.fork_cl_v32, R.string.fork_cl_v32_date, R.string.fork_cl_v32_text},

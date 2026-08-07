@@ -54,6 +54,7 @@ public abstract class UserPreferences {
     public static final String PREF_DRAWER_FEED_COUNTER2 = "prefDrawerFeedIndicator2";
     public static final String PREF_FORK_EPISODE_TITLE_LINES = "prefForkEpisodeTitleLines";
     public static final String PREF_FORK_VIDEO_NO_ROTATE = "prefForkVideoNoRotate";
+    public static final String PREF_FORK_COMPACT_SUBSCRIPTION_LIST = "prefForkCompactSubscriptionList";
     public static final String PREF_EXPANDED_NOTIFICATION = "prefExpandNotify";
     public static final String PREF_USE_EPISODE_COVER = "prefEpisodeCover";
     public static final String PREF_SHOW_TIME_LEFT = "showTimeLeft";
@@ -332,6 +333,15 @@ public abstract class UserPreferences {
     /** Fork feature: when true, the video player does not force landscape (plays in current orientation). */
     public static boolean getForkVideoNoRotate() {
         return prefs.getBoolean(PREF_FORK_VIDEO_NO_ROTATE, true);
+    }
+
+    /** Fork feature: compact single-column subscription list - half-size covers and denser rows. */
+    public static boolean getForkCompactSubscriptionList() {
+        return prefs.getBoolean(PREF_FORK_COMPACT_SUBSCRIPTION_LIST, false);
+    }
+
+    public static void setForkCompactSubscriptionList(boolean compact) {
+        prefs.edit().putBoolean(PREF_FORK_COMPACT_SUBSCRIPTION_LIST, compact).apply();
     }
 
     /**

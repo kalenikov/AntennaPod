@@ -116,5 +116,9 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         }
         title.setTextSize(textSize);
         fallbackTitle.setTextSize(textSize);
+
+        // Fork: compact list mode. Runs last so it wins over the upstream sizing above, and
+        // always writes both states because recycled holders would keep the previous sizes.
+        ForkCompactList.apply(itemView, coverImage, title, count, pinIcon, errorIcon, columnCount);
     }
 }

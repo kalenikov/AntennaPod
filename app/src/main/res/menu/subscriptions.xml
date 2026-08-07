@@ -121,4 +121,10 @@
         android:id="@+id/subscriptions_open_pinchflat"
         android:title="@string/fork_open_pinchflat"
         custom:showAsAction="never" />
+
+    <item
+        android:id="@id/subscriptions_compact_list"
+        android:title="@string/fork_compact_list_label"
+        android:checkable="true"
+        custom:showAsAction="never" />
 </menu>

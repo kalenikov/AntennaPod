@@ -43,6 +43,8 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_classiclook_title, R.string.fork_feat_classiclook_desc, R.string.fork_feat_v26},
             {R.string.fork_feat_nostrip_title, R.string.fork_feat_nostrip_desc, R.string.fork_feat_v28},
             {R.string.fork_feat_navsection_title, R.string.fork_feat_navsection_desc, R.string.fork_feat_v29},
+            {R.string.fork_feat_compactlist_title, R.string.fork_feat_compactlist_desc, R.string.fork_feat_v35},
+            {R.string.fork_feat_histdelete_title, R.string.fork_feat_histdelete_desc, R.string.fork_feat_v35},
     };
 
     @Override
