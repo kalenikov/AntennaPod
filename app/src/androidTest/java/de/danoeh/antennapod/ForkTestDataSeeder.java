@@ -144,6 +144,43 @@ public class ForkTestDataSeeder {
         assertTrue("no history entries were seeded", seeded > 0);
     }
 
+    /**
+     * Seeds one Pinchflat-style feed whose episodes carry a YouTube link, plus one episode without
+     * a link, so the "open on YouTube" context menu entry can be checked in both states.
+     */
+    @Test
+    public void seedYoutubeFeed() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        UserPreferences.init(context);
+
+        String feedUrl = "http://192.168.1.87:8945/sources/c32bde4b-8837-4023-9175-110d5bc4e71d/feed.xml";
+        Feed feed = new Feed(0, null, "Download", "https://youtube.com/playlist?list=PLSeed",
+                "Тестовая YouTube-лента", null, "KP Seeder", "ru", Feed.TYPE_RSS2, "kp-seed-yt",
+                null, null, feedUrl, System.currentTimeMillis());
+        feed.setImageUrl(Feed.PREFIX_GENERATIVE_COVER + feedUrl);
+        feed.setState(Feed.STATE_SUBSCRIBED);
+
+        List<FeedItem> items = new ArrayList<>();
+        items.add(youtubeItem(feed, "yt-with-link", "Выпуск с ссылкой на YouTube",
+                "https://www.youtube.com/watch?v=UxnSVXq8Rwk"));
+        items.add(youtubeItem(feed, "yt-without-link", "Выпуск без ссылки", null));
+        feed.setItems(items);
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        adapter.setCompleteFeed(feed);
+        adapter.close();
+
+        assertTrue("seeding produced no feeds", !DBReader.getFeedList().isEmpty());
+    }
+
+    private FeedItem youtubeItem(Feed feed, String guid, String title, String link) {
+        FeedItem item = new FeedItem(0, title, guid, link, new Date(), FeedItem.NEW, feed);
+        item.setMedia(new FeedMedia(0, item, 1800000, 0, 15000000, "audio/mp3",
+                null, "http://192.168.1.87:8945/media/" + guid + ".m4a", 0, null, 0, 0));
+        return item;
+    }
+
     private String coverFor(Context context, int index, String feedUrl) throws Exception {
         if (index % 5 == 4) {
             return null;

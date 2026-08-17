@@ -14,6 +14,7 @@ import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
+import de.danoeh.antennapod.storage.preferences.ForkInboxRetention;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -52,7 +53,7 @@ public class DownloadServiceInterfaceImpl extends DownloadServiceInterface {
                 .addTag(DownloadServiceInterface.WORK_TAG)
                 .addTag(DownloadServiceInterface.WORK_TAG_EPISODE_URL + item.getMedia().getDownloadUrl());
         if (!item.isTagged(FeedItem.TAG_QUEUE) && UserPreferences.enqueueDownloadedEpisodes()) {
-            DBWriter.addQueueItem(context, item);
+            DBWriter.addQueueItem(context, ForkInboxRetention.isEnabled(), item);
             workRequest.addTag(DownloadServiceInterface.WORK_DATA_WAS_QUEUED);
         }
         workRequest.setInputData(new Data.Builder().putLong(WORK_DATA_MEDIA_ID, item.getMedia().getId()).build());

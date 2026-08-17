@@ -55,6 +55,7 @@ public abstract class UserPreferences {
     public static final String PREF_FORK_EPISODE_TITLE_LINES = "prefForkEpisodeTitleLines";
     public static final String PREF_FORK_VIDEO_NO_ROTATE = "prefForkVideoNoRotate";
     public static final String PREF_FORK_COMPACT_SUBSCRIPTION_LIST = "prefForkCompactSubscriptionList";
+    public static final String PREF_FORK_KEEP_NEW_ON_DOWNLOAD = "prefForkKeepNewOnDownload";
     public static final String PREF_EXPANDED_NOTIFICATION = "prefExpandNotify";
     public static final String PREF_USE_EPISODE_COVER = "prefEpisodeCover";
     public static final String PREF_SHOW_TIME_LEFT = "showTimeLeft";
@@ -342,6 +343,15 @@ public abstract class UserPreferences {
 
     public static void setForkCompactSubscriptionList(boolean compact) {
         prefs.edit().putBoolean(PREF_FORK_COMPACT_SUBSCRIPTION_LIST, compact).apply();
+    }
+
+    /** Fork feature: when true, downloading an episode does not remove it from the inbox. */
+    public static boolean getForkKeepNewOnDownload() {
+        return prefs.getBoolean(PREF_FORK_KEEP_NEW_ON_DOWNLOAD, false);
+    }
+
+    public static void setForkKeepNewOnDownload(boolean keep) {
+        prefs.edit().putBoolean(PREF_FORK_KEEP_NEW_ON_DOWNLOAD, keep).apply();
     }
 
     /**

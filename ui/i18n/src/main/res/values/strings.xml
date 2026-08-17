@@ -803,6 +803,14 @@
     <string name="fork_delete_played_history_label">Удалить прослушанные</string>
     <string name="fork_delete_played_history_confirm">Удалить из истории %1$d прослушанных эпизодов и стереть их загруженные файлы?</string>
     <string name="fork_delete_played_history_none">В истории нет прослушанных эпизодов</string>
+    <string name="fork_feat_v36">fork.36</string>
+    <string name="fork_feat_ytlink_title">«Открыть на YouTube» в меню эпизода</string>
+    <string name="fork_feat_ytlink_desc">Долгое нажатие на эпизод в любом списке — пункт «Открыть на YouTube» открывает исходное видео. Пункт появляется только у эпизодов, у которых в ленте указана ссылка на YouTube.</string>
+    <string name="fork_open_youtube_label">Открыть на YouTube</string>
+    <string name="fork_feat_inboxkeep_title">Загрузка не убирает из «Входящих»</string>
+    <string name="fork_feat_inboxkeep_desc">Тумблер в разделе KalenikovPod: скачанный эпизод остаётся во «Входящих» и после постановки в очередь, и после окончания загрузки. Уходит только при прослушивании, свайпе или пункте «Убрать из входящих». Ручное добавление в очередь работает как обычно.</string>
+    <string name="fork_keep_inbox_label">Загрузка не убирает из «Входящих»</string>
+    <string name="fork_keep_inbox_summary">Скачанный эпизод остаётся во «Входящих», пока его не прослушают или не убрать вручную</string>
     <string name="fork_feat_v19">fork.19</string>
     <string name="fork_feat_pinchflat_title">Интеграция с Pinchflat</string>
     <string name="fork_feat_pinchflat_desc">Кнопка в шапке канала-источника открывает страницу этого источника в Pinchflat, а пункт «Открыть Pinchflat» в меню подписок — список источников. Адрес берётся из URL самих подписок, не захардкожен.</string>
@@ -828,6 +836,9 @@
     <string name="fork_feat_navsection_desc">Раздел KalenikovPod (обновления, фичи, логи, экспорт/импорт настроек) теперь можно добавить как отдельный пункт навигации (боковая панель / нижняя панель / «Ещё») через «Настроить навигацию», а не только через Настройки.</string>
     <string name="fork_feat_nostrip_title">Без белой полосы на экране канала</string>
     <string name="fork_feat_nostrip_desc">Убран лишний нижний системный отступ на экране списка эпизодов канала, из-за которого над мини-плеером появлялась пустая белая полоса, перекрывавшая часть списка.</string>
+    <string name="fork_cl_v36" translatable="false">fork.36</string>
+    <string name="fork_cl_v36_date" translatable="false">2026-08-17</string>
+    <string name="fork_cl_v36_text">• В контекстном меню эпизода (долгое нажатие) появился пункт «Открыть на YouTube» — открывает исходное видео. Показывается только у эпизодов со ссылкой на YouTube\n• Новый тумблер в разделе KalenikovPod: «Загрузка не убирает из «Входящих»». Пока он включён, скачанный эпизод остаётся во «Входящих» — и когда встаёт в очередь, и когда загрузка завершилась</string>
     <string name="fork_cl_v35" translatable="false">fork.35</string>
     <string name="fork_cl_v35_date" translatable="false">2026-08-07</string>
     <string name="fork_cl_v35_text">• Компактный режим списка подписок: пункт «Компактный список» в меню экрана «Подписки» (виден только в режиме списка). Миниатюры меньше, заголовок в одну строку, высота строки 44dp вместо 72dp — на экран помещается в полтора раза больше подписок\n• На экране «История прослушивания» вместо «Очистить историю» — кнопка «Удалить прослушанные»: убирает из истории прослушанные эпизоды и стирает их загруженные файлы</string>

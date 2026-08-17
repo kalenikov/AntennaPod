@@ -45,6 +45,8 @@ public class ForkFeaturesActivity extends ToolbarActivity {
             {R.string.fork_feat_navsection_title, R.string.fork_feat_navsection_desc, R.string.fork_feat_v29},
             {R.string.fork_feat_compactlist_title, R.string.fork_feat_compactlist_desc, R.string.fork_feat_v35},
             {R.string.fork_feat_histdelete_title, R.string.fork_feat_histdelete_desc, R.string.fork_feat_v35},
+            {R.string.fork_feat_ytlink_title, R.string.fork_feat_ytlink_desc, R.string.fork_feat_v36},
+            {R.string.fork_feat_inboxkeep_title, R.string.fork_feat_inboxkeep_desc, R.string.fork_feat_v36},
     };
 
     @Override

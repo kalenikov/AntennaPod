@@ -134,6 +134,9 @@ public class FeedItemMenuHandler {
             setItemVisibility(menu, R.id.mark_read_item, false);
         }
 
+        setItemVisibility(menu, R.id.fork_open_youtube_item,
+                selectedItems.size() == 1 && ForkYoutube.hasVideo(selectedItems.get(0)));
+
         if (excludeIds != null) {
             for (int id : excludeIds) {
                 setItemVisibility(menu, id, false);
@@ -224,6 +227,8 @@ public class FeedItemMenuHandler {
         } else if (menuItemId == R.id.share_item) {
             ShareDialog shareDialog = ShareDialog.newInstance(selectedItem);
             shareDialog.show((fragment.getActivity().getSupportFragmentManager()), "ShareEpisodeDialog");
+        } else if (menuItemId == R.id.fork_open_youtube_item) {
+            IntentUtils.openInBrowser(context, ForkYoutube.videoUrl(selectedItem));
         } else {
             Log.d(TAG, "Unknown menuItemId: " + menuItemId);
             return false;

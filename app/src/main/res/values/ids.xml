@@ -14,6 +14,7 @@
     <!-- Fork: declared explicitly so shrinkResources keeps them in release builds -->
     <item name="subscriptions_compact_list" type="id"/>
     <item name="fork_delete_played_history_item" type="id"/>
+    <item name="fork_open_youtube_item" type="id"/>
 
     <!-- View types -->
     <item name="view_type_episode_item" type="id"/>

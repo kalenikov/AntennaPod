@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 import de.danoeh.antennapod.model.download.DownloadRequest;
 import de.danoeh.antennapod.model.download.DownloadResult;
+import de.danoeh.antennapod.storage.preferences.ForkInboxRetention;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.model.download.DownloadError;
@@ -52,6 +53,7 @@ public class MediaDownloadedHandler implements Runnable {
         // media.setDownloaded modifies played state
         boolean broadcastUnreadStateUpdate = media.getItem() != null && media.getItem().isNew();
         media.setDownloaded(true, System.currentTimeMillis());
+        ForkInboxRetention.restoreNewAfterDownload(media.getItem(), broadcastUnreadStateUpdate);
         media.setLocalFileUrl(request.getDestination());
         media.setSize(new File(request.getDestination()).length());
         media.checkEmbeddedPicture(); // enforce check

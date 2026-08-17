@@ -394,6 +394,17 @@ public class DBWriter {
      * @param items    FeedItem objects that should be added to the queue.
      */
     public static Future<?> addQueueItem(final Context context, final FeedItem... items) {
+        return addQueueItem(context, false, items);
+    }
+
+    /**
+     * Same as {@link #addQueueItem(Context, FeedItem...)}, but the caller can ask to leave the
+     * NEW (inbox) flag alone. Used by the fork's "downloading does not remove from inbox" switch.
+     *
+     * @param keepNewFlag when true, queued items that are NEW stay NEW instead of becoming UNPLAYED
+     */
+    public static Future<?> addQueueItem(final Context context, final boolean keepNewFlag,
+                                         final FeedItem... items) {
         return runOnDbThread(() -> {
             if (items.length < 1) {
                 return;
@@ -421,7 +432,7 @@ public class DBWriter {
 
                 item.addTag(FeedItem.TAG_QUEUE);
                 updatedItems.add(item);
-                if (item.isNew()) {
+                if (item.isNew() && !keepNewFlag) {
                     markAsUnplayed.add(item);
                 }
                 insertPosition++;
