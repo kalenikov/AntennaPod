@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.preferences.ForkInboxRetention;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.Playable;
@@ -26,7 +27,7 @@ public abstract class PlayableUtils {
             FeedMedia media = (FeedMedia) playable;
             media.setLastPlayedTimeHistory(new Date(timestamp));
             FeedItem item = media.getItem();
-            if (item != null && item.isNew()) {
+            if (item != null && item.isNew() && !ForkInboxRetention.isEnabled()) {
                 DBWriter.markItemsPlayed(FeedItem.UNPLAYED, false, Collections.singletonList(item));
             }
             if (media.getStartPosition() >= 0 && playable.getPosition() > media.getStartPosition()) {

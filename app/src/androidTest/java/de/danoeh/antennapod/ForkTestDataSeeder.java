@@ -26,7 +26,10 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -172,6 +175,75 @@ public class ForkTestDataSeeder {
         adapter.close();
 
         assertTrue("seeding produced no feeds", !DBReader.getFeedList().isEmpty());
+    }
+
+    /**
+     * Seeds one subscription with three episodes in the inbox whose media files are real, playable
+     * audio, so that pressing play in the emulator actually starts playback. Needed to check that
+     * the "keep episode in the inbox" switch survives playback, which a stub media file cannot show.
+     */
+    @Test
+    public void seedInboxPlayable() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        UserPreferences.init(context);
+
+        String feedUrl = "http://kp.seed/inbox-playable.xml";
+        Feed feed = new Feed(0, null, "Входящие: проверка", "http://kp.seed/inbox-playable",
+                "Эпизоды с настоящим аудио", null, "KP Seeder", "ru", Feed.TYPE_RSS2,
+                "kp-seed-inbox-playable", null, null, feedUrl, System.currentTimeMillis());
+        feed.setImageUrl(Feed.PREFIX_GENERATIVE_COVER + feedUrl);
+        feed.setState(Feed.STATE_SUBSCRIBED);
+
+        List<FeedItem> items = new ArrayList<>();
+        for (int episode = 0; episode < 3; episode++) {
+            String guid = "kp-seed-inbox-playable-" + episode;
+            FeedItem item = new FeedItem(0, "Проверка «Входящих» — выпуск " + (episode + 1), guid,
+                    "http://kp.seed/inbox-playable/" + episode,
+                    new Date(System.currentTimeMillis() - episode * 3600000L), FeedItem.NEW, feed);
+            File file = writeSilentWav(context, guid + ".wav");
+            item.setMedia(new FeedMedia(0, item, 30000, 0, file.length(), "audio/wav",
+                    file.getAbsolutePath(), "http://kp.seed/inbox-playable/" + episode + ".wav",
+                    System.currentTimeMillis(), null, 0, 0));
+            items.add(item);
+        }
+        feed.setItems(items);
+
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        adapter.setCompleteFeed(feed);
+        adapter.close();
+
+        assertTrue("seeding produced no feeds", !DBReader.getFeedList().isEmpty());
+    }
+
+    /** Writes 30 seconds of silence as an 8 kHz mono 8-bit WAV file that the player can open. */
+    private File writeSilentWav(Context context, String name) throws Exception {
+        File dir = context.getExternalFilesDir("media");
+        File file = new File(dir, name);
+        int sampleRate = 8000;
+        int samples = sampleRate * 30;
+        byte[] header = new byte[44];
+        ByteBuffer buffer = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put("RIFF".getBytes());
+        buffer.putInt(36 + samples);
+        buffer.put("WAVE".getBytes());
+        buffer.put("fmt ".getBytes());
+        buffer.putInt(16);
+        buffer.putShort((short) 1);
+        buffer.putShort((short) 1);
+        buffer.putInt(sampleRate);
+        buffer.putInt(sampleRate);
+        buffer.putShort((short) 1);
+        buffer.putShort((short) 8);
+        buffer.put("data".getBytes());
+        buffer.putInt(samples);
+        byte[] silence = new byte[samples];
+        Arrays.fill(silence, (byte) 128);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            out.write(header);
+            out.write(silence);
+        }
+        return file;
     }
 
     private FeedItem youtubeItem(Feed feed, String guid, String title, String link) {

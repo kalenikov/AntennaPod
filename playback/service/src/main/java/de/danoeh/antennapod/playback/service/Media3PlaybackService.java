@@ -59,6 +59,7 @@ import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
+import de.danoeh.antennapod.storage.preferences.ForkInboxRetention;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.chapters.ChapterUtils;
@@ -480,7 +481,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             }
                             media.setPosition((int) player.getCurrentPosition());
                             if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)) {
-                                DBWriter.addQueueItem(this, media.getItem());
+                                DBWriter.addQueueItem(this, ForkInboxRetention.isEnabled(), media.getItem());
                             }
                             switchToPlayable(media);
                         },

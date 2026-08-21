@@ -31,6 +31,7 @@ import java.util.Set;
 import de.danoeh.antennapod.model.download.ProxyConfig;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.model.feed.ForkInboxPolicy;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 
@@ -160,6 +161,7 @@ public abstract class UserPreferences {
         UserPreferences.prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         createNoMediaFile();
+        ForkInboxPolicy.setSource(UserPreferences::getForkKeepNewOnDownload);
     }
 
     public enum ThemePreference {
